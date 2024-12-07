@@ -1,57 +1,57 @@
 #include "board.h"
 
-//³õÊ¼»¯
+//åˆå§‹åŒ–
 void Board::initialize(int type)
 {
 	if (type == 1){
-		// ÏÈ°ÑÆåÅÌÉÏµÄÃ¿¸öÎ»ÖÃ¶¼³õÊ¼»¯Îª¿Õ£¨level = 13£©
+		// å…ˆæŠŠæ£‹ç›˜ä¸Šçš„æ¯ä¸ªä½ç½®éƒ½åˆå§‹åŒ–ä¸ºç©ºï¼ˆlevel = 13ï¼‰
 		for (int i = 0; i < BOARD_ROWS; ++i) {
 			for (int j = 0; j < BOARD_COLS; ++j) {
-				board[i][j] = Piece(13, 0, false, i, j);  // ³õÊ¼»¯Îª¿Õ
+				board[i][j] = Piece(13, 0, false, i, j);  // åˆå§‹åŒ–ä¸ºç©º
 			}
 		}
-		// ÉèÖÃÉÏ·½Æå×Ó
+		// è®¾ç½®ä¸Šæ–¹æ£‹å­
 		std::srand(std::time(0));
 		std::vector<int> pieceLevels1 = { 9, 8, 7, 7, 6, 6, 5, 5, 4, 4, 3, 3, 3, 2, 2, 2, 1, 1, 1, 10, 10, 11 };
 		for (int i = 0; i <= 5; ++i) {
 			for (int j = 0; j <= 4; ++j) {
 				if (i == 0 && j == 3) {
-					board[i][j] = Piece(12, 1, 1, i, j);  // ÉÏ·½µÄ¾üÆì
+					board[i][j] = Piece(12, 1, 1, i, j);  // ä¸Šæ–¹çš„å†›æ——
 				}
 				else if ((i == 0 && (j == 2 || j == 4))) {
-					board[i][j] = Piece(11, 1, 1, i, j);  // ÉÏ·½µÄµØÀ×
+					board[i][j] = Piece(11, 1, 1, i, j);  // ä¸Šæ–¹çš„åœ°é›·
 				}
 				else if ((i == 2 && (j == 1 || j == 3)) || (i == 3 && j == 2) || (i == 4 && (j == 1 || j == 3))) {
-					board[i][j] = Piece(13, 1, 0, i, j);  // ÉÏ·½µÄĞĞÓªÇøÓò
+					board[i][j] = Piece(13, 1, 0, i, j);  // ä¸Šæ–¹çš„è¡Œè¥åŒºåŸŸ
 				}
 				else {
 					if (!pieceLevels1.empty()) {
 						int length = pieceLevels1.size();
-						int randomNumber = std::rand() % length;  // 0 µ½ length-1 Ö®¼äµÄËæ»úÊı
-						board[i][j] = Piece(pieceLevels1[randomNumber], 1, 0, i, j);  // ÆäËûÎ»ÖÃËæ»úÉú³ÉÆå×Ó
+						int randomNumber = std::rand() % length;  // 0 åˆ° length-1 ä¹‹é—´çš„éšæœºæ•°
+						board[i][j] = Piece(pieceLevels1[randomNumber], 1, 0, i, j);  // å…¶ä»–ä½ç½®éšæœºç”Ÿæˆæ£‹å­
 						pieceLevels1.erase(pieceLevels1.begin() + randomNumber);
 					}
 				}
 			}
 		}
-		// ÉèÖÃÏÂ·½Æå×Ó
+		// è®¾ç½®ä¸‹æ–¹æ£‹å­
 		std::vector<int> pieceLevels2 = { 9, 8, 7, 7, 6, 6, 5, 5, 4, 4, 3, 3, 3, 2, 2, 2, 1, 1, 1, 10, 10, 11 };
 		for (int i = 6; i <= 12; ++i) {
 			for (int j = 0; j <= 4; ++j) {
 				if (i == 11 && j == 1) {
-					board[i][j] = Piece(12, 2, 1, i, j);  // ÏÂ·½µÄ¾üÆì
+					board[i][j] = Piece(12, 2, 1, i, j);  // ä¸‹æ–¹çš„å†›æ——
 				}
 				else if (i == 11 && (j == 0 || j == 2)) {
-					board[i][j] = Piece(11, 2, 1, i, j);  // ÏÂ·½µÄµØÀ×
+					board[i][j] = Piece(11, 2, 1, i, j);  // ä¸‹æ–¹çš„åœ°é›·
 				}
 				else if ((i == 7 && (j == 1 || j == 3)) || (i == 9 && j == 2) || (i == 10 && (j == 1 || j == 3))) {
-					board[i][j] = Piece(13, 2, 0, i, j);  // ÏÂ·½µÄĞĞÓªÇøÓò
+					board[i][j] = Piece(13, 2, 0, i, j);  // ä¸‹æ–¹çš„è¡Œè¥åŒºåŸŸ
 				}
 				else {
 					if (!pieceLevels2.empty()) {
 						int length = pieceLevels2.size();
-						int randomNumber = std::rand() % length;  // 0 µ½ length-1 Ö®¼äµÄËæ»úÊı
-						board[i][j] = Piece(pieceLevels2[randomNumber], 2, 0, i, j);  // ÆäËûÎ»ÖÃËæ»úÉú³ÉÆå×Ó
+						int randomNumber = std::rand() % length;  // 0 åˆ° length-1 ä¹‹é—´çš„éšæœºæ•°
+						board[i][j] = Piece(pieceLevels2[randomNumber], 2, 0, i, j);  // å…¶ä»–ä½ç½®éšæœºç”Ÿæˆæ£‹å­
 						pieceLevels2.erase(pieceLevels2.begin() + randomNumber);
 					}
 				}
@@ -64,7 +64,7 @@ void Board::initialize(int type)
 	}
 }
 
-//´òÓ¡ÆåÅÌ
+//æ‰“å°æ£‹ç›˜
 void Board::printBoard() const {
 	for (int i = 0; i < BOARD_ROWS; ++i) {
 		for (int j = 0; j < BOARD_COLS; ++j) {
@@ -78,6 +78,8 @@ void Board::printBoard() const {
 	}
 }
 
+
+
 //move
 int Board::move(int currentX, int currentY, int nextX, int nextY) {
 	int levelcr = board[currentX][currentY].getLevel();
@@ -85,11 +87,27 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 	int playcr = board[currentX][currentY].getPlayer();
 	int playnt = board[nextX][nextY].getPlayer();
 	int wret = 0;
+	
+
+	//è¦è¿‡æ²³
+	if ((currentX < 5 && nextX > 5) || (nextX < 5 && currentX > 5))
+	{
+		if (currentY == nextY)
+		{
+			if (nextY == 0 || nextY == 2 || nextY == 4)
+			{
+				wret = 1;
+			}
+
+		}
+	}
+	
+
 
 
 	if (playcr == playnt)
 	{
-		std::cout << "ÏàÍ¬ÕóÓª²»¸ø¶¯" << std::endl;
+		std::cout << "ç›¸åŒé˜µè¥ä¸ç»™åŠ¨" << std::endl;
 		return 0;
 	}
 
@@ -101,72 +119,92 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 		wret = 1;
 	if (xydiff == 2)
 	{
+		//æ–œç€åŠ¨ä¸”è¡Œè¥
 		if (abs(nextX - currentX) == 1 && abs(nextY - currentY) == 1)
 		{
+			//ç›®çš„åœ°æ˜¯è¡Œè¥
 			if ((nextX == 2 || nextX == 3 || nextX == 4 || nextX == 7 || nextX == 8 || nextX == 9) && (nextY == 1 || nextY == 2 || nextY == 3))
-				wret = 1;
+			{
+				if (levelnt != 13)
+				{
+					std::cout << "è¡Œè¥æœ‰æ£‹äº†" << std::endl;
+				}
+				else
+				{
+					wret = 1;
+				}
+				
+			}
+				
+			//å‡ºå‘ç‚¹æ˜¯è¡Œè¥
 			if ((currentX == 2 || currentX == 3 || currentX == 4 || currentX == 7 || currentX == 8 || currentX == 9) && (currentY == 1 || currentY == 2 || currentY == 3))
 				wret = 1;
 		}
-		if (nextX == currentX || nextY == currentY)
+		//åŠ¨ä¸¤æ ¼é“è·¯
+		if (nextX == currentX)
 		{
-			if (nextX == 5 || nextX == 6)
-			{
-				if (currentX == 5 || currentX == 6)
-					wret = 1;
-			}
+			if (currentX == 1 || currentX == 5 || currentX == 6 || currentX == 11)
+				wret = 1;
+		}
+		if (nextY == currentY)
+		{
+			if (currentY == 0 || currentY == 4)
+				wret = 1;
 		}
 	}
+	//å¤šæ ¼é“è·¯
 	if (xydiff > 2)
 	{
-		if (nextX == currentX || nextY == currentY)
+		if (nextX == currentX)
 		{
-			if (nextX == 5 || nextX == 6)
-			{
-				if (currentX == 5 || currentX == 6)
-					wret = 1;
-			}
+			if (currentX == 1 || currentX == 5 || currentX == 6 || currentX == 11)
+				wret = 1;
+		}
+		if (nextY == currentY)
+		{
+			if (currentY == 0 || currentY == 4)
+				wret = 1;
 		}
 	}
 
 
 	if (wret == 0)
 	{
-		printf("ÒÆ¶¯²»ºÏ·¨");
+		printf("ç§»åŠ¨ä¸åˆæ³•");
 		return 0;
 	}
 
 
 
-	//ÏÈÅĞ¶Ï¸ÃÆå×ÓÊÇ²»ÊÇ µØÀ×ºÍ¾üÆì
+	//å…ˆåˆ¤æ–­è¯¥æ£‹å­æ˜¯ä¸æ˜¯ åœ°é›·å’Œå†›æ——
 	if (levelcr == 11 || levelcr == 12)
 	{
-		printf("¸ÃÆå×ÓÄãÊÇ²»ÄÜ¶¯µÄ");
+		printf("è¯¥æ£‹å­ä½ æ˜¯ä¸èƒ½åŠ¨çš„");
 	}
 	else
 	{
-		// ÅĞ¶ÏµÈ¼¶ÊÇ²»ÊÇĞ¡ÓÚ¶Ô·½
+		// åˆ¤æ–­ç­‰çº§æ˜¯ä¸æ˜¯å°äºå¯¹æ–¹
 		if (levelcr < levelnt)
 		{
-			//ÔÙÅĞ¶Ï¶Ô·½ÊÇ²»ÊÇÕ¨µ¯ºÍµØÀ×
+			//å†åˆ¤æ–­å¯¹æ–¹æ˜¯ä¸æ˜¯ç‚¸å¼¹å’Œåœ°é›·
 			if (levelnt == 10 || levelnt == 11)
 			{
-				//ÅĞ¶Ï×Ô¼ºÊÇ²»ÊÇ¹¤±ø
+				//åˆ¤æ–­è‡ªå·±æ˜¯ä¸æ˜¯å·¥å…µ
 				if (levelcr == 1)
 				{
-					//printf("¹¤±ø³ÔÕ¨µ¯»òÕßµØÀ×");
-					//°Ñµ±Ç°Æå×ÓÒÆ¹ıÈ¥
+					//printf("å·¥å…µåƒç‚¸å¼¹æˆ–è€…åœ°é›·");
+					//æŠŠå½“å‰æ£‹å­ç§»è¿‡å»
 					board[nextX][nextY].setPosition(currentX, currentY);
 					board[nextX][nextY].setLevel(board[currentX][currentY].getLevel());
 					board[nextX][nextY].setPlayer(board[currentX][currentY].getPlayer());
 					board[nextX][nextY].setIsFaceUp(board[currentX][currentY].getIsFaceUp());
-					//Çå¿Õµ±Ç°Æå×Ó
+					//æ¸…ç©ºå½“å‰æ£‹å­
 					board[currentX][currentY].setLevel(13);
 					return 1;
 				}
 				else
 				{
-					//printf("±»Õ¨µ¯ºÍµØÀ×Õ¨ËÀ");
+					//printf("è¢«ç‚¸å¼¹å’Œåœ°é›·ç‚¸æ­»");
 					board[currentX][currentY].setLevel(13);
 					board[nextX][nextY].setLevel(13);
 					return 1;
@@ -175,31 +213,31 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 			}
 			else
 			{
-				//ÅĞ¶Ï¶Ô·½ÊÇ²»ÊÇ¾üÆì
+				//åˆ¤æ–­å¯¹æ–¹æ˜¯ä¸æ˜¯å†›æ——
 				if (levelnt == 12)
 				{
-					//printf("³Ô¾üÆì");
-					//°Ñµ±Ç°Æå×ÓÒÆ¹ıÈ¥
+					//printf("åƒå†›æ——");
+					//æŠŠå½“å‰æ£‹å­ç§»è¿‡å»
 					board[nextX][nextY].setPosition(currentX, currentY);
 					board[nextX][nextY].setLevel(board[currentX][currentY].getLevel());
 					board[nextX][nextY].setPlayer(board[currentX][currentY].getPlayer());
 					board[nextX][nextY].setIsFaceUp(board[currentX][currentY].getIsFaceUp());
-					//Çå¿Õµ±Ç°Æå×Ó
+					//æ¸…ç©ºå½“å‰æ£‹å­
 					board[currentX][currentY].setLevel(13);
 					return 1;
 				}
 				else
 				{
-					//Èç¹û¶ÔÃæÃ»¶«Î÷
+					//å¦‚æœå¯¹é¢æ²¡ä¸œè¥¿
 					if (levelnt == 13)
 					{
-						//printf("ÒÆ¶¯Æå×Óµ½¿Õ¸ñµØ·½");
-						//°Ñµ±Ç°Æå×ÓÒÆ¹ıÈ¥
+						//printf("ç§»åŠ¨æ£‹å­åˆ°ç©ºæ ¼åœ°æ–¹");
+						//æŠŠå½“å‰æ£‹å­ç§»è¿‡å»
 						board[nextX][nextY].setPosition(currentX, currentY);
 						board[nextX][nextY].setLevel(board[currentX][currentY].getLevel());
 						board[nextX][nextY].setPlayer(board[currentX][currentY].getPlayer());
 						board[nextX][nextY].setIsFaceUp(board[currentX][currentY].getIsFaceUp());
-						//Çå¿Õµ±Ç°Æå×Ó
+						//æ¸…ç©ºå½“å‰æ£‹å­
 						board[currentX][currentY].setLevel(13);
 						return 1;
 					}
@@ -207,8 +245,8 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 					{
 						if (board[nextX][nextY].getIsFaceUp() == 0)
 						{
-							//printf("³Ô±³×ÅµÄÆå×Ó");
-							//Çå¿Õµ±Ç°Æå×Ó
+							//printf("åƒèƒŒç€çš„æ£‹å­");
+							//æ¸…ç©ºå½“å‰æ£‹å­
 							board[currentX][currentY].setLevel(13);
 							board[nextX][nextY].setIsFaceUp(1);
 							return 1;
@@ -216,7 +254,7 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 						}
 						else
 						{
-							//printf("Æå×ÓµÈ¼¶Ã»¶Ô·½¸ß²»ÄÜÒÆ¶¯");
+							//printf("æ£‹å­ç­‰çº§æ²¡å¯¹æ–¹é«˜ä¸èƒ½ç§»åŠ¨");
 							return 0;
 						}
 						
@@ -224,25 +262,25 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 				}
 			}
 		}
-		//Èç¹ûµÈ¼¶²»Ğ¡ÓÚ¶Ô·½
+		//å¦‚æœç­‰çº§ä¸å°äºå¯¹æ–¹
 		else
 		{
 			if (levelcr == levelnt)
 			{
-				//printf("ÏàµÈÒ»ÆğËÀ");
+				//printf("ç›¸ç­‰ä¸€èµ·æ­»");
 				board[currentX][currentY].setLevel(13);
 				board[nextX][nextY].setLevel(13);
 				return 1;
 			}
 			else
 			{
-				//°Ñµ±Ç°Æå×ÓÒÆ¹ıÈ¥
-				//printf("´ó³ÔĞ¡");
+				//æŠŠå½“å‰æ£‹å­ç§»è¿‡å»
+				//printf("å¤§åƒå°");
 				board[nextX][nextY].setPosition(currentX, currentY);
 				board[nextX][nextY].setLevel(board[currentX][currentY].getLevel());
 				board[nextX][nextY].setPlayer(board[currentX][currentY].getPlayer());
 				board[nextX][nextY].setIsFaceUp(board[currentX][currentY].getIsFaceUp());
-				//Çå¿Õµ±Ç°Æå×Ó
+				//æ¸…ç©ºå½“å‰æ£‹å­
 				board[currentX][currentY].setLevel(13);
 				return 1;
 			}
@@ -251,18 +289,18 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 
 }
 
-// ·µ»ØÊÇ·ñ·­¿ª
+// è¿”å›æ˜¯å¦ç¿»å¼€
 int Board::isFaceup(int currentX, int currentY){
 	int ret = board[currentX][currentY].getIsFaceUp();
 	return ret;
 }
 
-// ·µ»ØÍæ¼ÒÆå×Ó
+// è¿”å›ç©å®¶æ£‹å­
 int Board::getplayer(int xret, int yret){
 	return board[xret][yret].getPlayer();
 }
 
-// ÊÇ·ñ´æÔÚÆå×Ó
+// æ˜¯å¦å­˜åœ¨æ£‹å­
 int Board::existPiece(int xret, int yret){
 	int l = board[xret][yret].getLevel();
 	if (l == 13)
@@ -276,7 +314,7 @@ int Board::existPiece(int xret, int yret){
 
 }
 
-// ·µ»ØÆåÅÌ×´Ì¬
+// è¿”å›æ£‹ç›˜çŠ¶æ€
 std::string Board::getBoardState(){
 	std::string result = "";
 	for (int i = 0; i < BOARD_ROWS; ++i) {
