@@ -86,33 +86,27 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 	int levelnt = board[nextX][nextY].getLevel();
 	int playcr = board[currentX][currentY].getPlayer();
 	int playnt = board[nextX][nextY].getPlayer();
-	int wret = 0;
+	int wret = 0,whe = 0;
 	
-
 	//要过河
-	if ((currentX < 5 && nextX > 5) || (nextX < 5 && currentX > 5))
+	if (((currentX < 5 || currentX == 5) && nextX > 5) || ((nextX < 5 || nextX == 5) && currentX > 5))
 	{
 		if (currentY == nextY)
 		{
 			if (nextY == 0 || nextY == 2 || nextY == 4)
 			{
-				wret = 1;
+				whe = 1;
 			}
 
 		}
 	}
 	
 
-
-
 	if (playcr == playnt)
 	{
 		std::cout << "相同阵营不给动" << std::endl;
 		return 0;
 	}
-
-
-
 
 	int xydiff = abs(nextX + nextY - currentX - currentY);
 	if (xydiff == 1)
@@ -175,6 +169,7 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 					int allnull = 1;
 					for (int i = nextY + 1; i < currentY; i++)
 					{
+						
 						if (board[currentX][i].getLevel() != 13)
 						{
 							allnull = 0;
@@ -211,6 +206,7 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 					int allnull = 1;
 					for (int i = nextX + 1; i < currentX; i++)
 					{
+						//std::cout << "x" << i << "y" << currentY << "level:" << board[i][currentY].getLevel() << std::endl;
 						if (board[i][currentY].getLevel() != 13)
 						{
 							allnull = 0;
@@ -240,11 +236,17 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 	}
 
 
-	if (wret == 0)
+	if (wret == 0 || whe == 0)
 	{
 		printf("移动不合法");
 		return 0;
 	}
+
+	
+	
+	
+
+
 
 
 
