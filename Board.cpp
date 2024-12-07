@@ -1,3 +1,4 @@
+//版本号：1008611
 #include "board.h"
 
 //初始化
@@ -97,7 +98,6 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 			{
 				whe = 1;
 			}
-
 		}
 	}
 	
