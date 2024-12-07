@@ -269,7 +269,7 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 					board[nextX][nextY].setPosition(currentX, currentY);
 					board[nextX][nextY].setLevel(board[currentX][currentY].getLevel());
 					board[nextX][nextY].setPlayer(board[currentX][currentY].getPlayer());
-					//board[nextX][nextY].setIsFaceUp(board[currentX][currentY].getIsFaceUp());
+					board[nextX][nextY].setIsFaceUp(board[currentX][currentY].getIsFaceUp());
 					//清空当前棋子
 					board[currentX][currentY].setLevel(13);
 					return 1;
@@ -293,7 +293,7 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 					board[nextX][nextY].setPosition(currentX, currentY);
 					board[nextX][nextY].setLevel(board[currentX][currentY].getLevel());
 					board[nextX][nextY].setPlayer(board[currentX][currentY].getPlayer());
-					//board[nextX][nextY].setIsFaceUp(board[currentX][currentY].getIsFaceUp());
+					board[nextX][nextY].setIsFaceUp(board[currentX][currentY].getIsFaceUp());
 					//清空当前棋子
 					board[currentX][currentY].setLevel(13);
 					return 1;
@@ -308,7 +308,7 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 						board[nextX][nextY].setPosition(currentX, currentY);
 						board[nextX][nextY].setLevel(board[currentX][currentY].getLevel());
 						board[nextX][nextY].setPlayer(board[currentX][currentY].getPlayer());
-						//board[nextX][nextY].setIsFaceUp(board[currentX][currentY].getIsFaceUp());
+						board[nextX][nextY].setIsFaceUp(board[currentX][currentY].getIsFaceUp());
 						//清空当前棋子
 						board[currentX][currentY].setLevel(13);
 						return 1;
@@ -358,7 +358,7 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 					board[nextX][nextY].setPosition(currentX, currentY);
 					board[nextX][nextY].setLevel(board[currentX][currentY].getLevel());
 					board[nextX][nextY].setPlayer(board[currentX][currentY].getPlayer());
-					//board[nextX][nextY].setIsFaceUp(board[currentX][currentY].getIsFaceUp());
+					board[nextX][nextY].setIsFaceUp(board[currentX][currentY].getIsFaceUp());
 					//清空当前棋子
 					board[currentX][currentY].setLevel(13);
 					return 1;
