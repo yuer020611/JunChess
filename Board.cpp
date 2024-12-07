@@ -1,4 +1,4 @@
-//版本号：1008613
+//版本号：1008614
 #include "board.h"
 
 //初始化
@@ -104,8 +104,11 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 
 	if (playcr == playnt)
 	{
-		std::cout << "相同阵营不给动" << std::endl;
-		return 0;
+		if (levelnt != 13)
+		{
+			std::cout << "相同阵营不给动" << std::endl;
+			return 0;
+		}
 	}
 
 	int xydiff = abs(nextX + nextY - currentX - currentY);
@@ -197,7 +200,7 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 			}
 				
 		}
-		if (nextY == currentY)
+		if (nextY == currentY && (currentX > 0 && currentX < 12) && (nextX > 0 && nextX < 12))
 		{
 			if (currentY == 0 || currentY == 4)
 			{
