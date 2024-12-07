@@ -1,4 +1,4 @@
-//版本号：1008612
+//版本号：1008613
 #include "board.h"
 
 //初始化
@@ -281,6 +281,7 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 					//printf("被炸弹和地雷炸死");
 					board[currentX][currentY].setLevel(13);
 					board[nextX][nextY].setLevel(13);
+					board[nextX][nextY].setIsFaceUp(1);
 					return 1;
 				}
 
