@@ -16,14 +16,14 @@ public:
 	static const int BOARD_ROWS = 12;
 	Piece board[BOARD_ROWS][BOARD_COLS];
 
-	void initialize(int type);// ³õÊ¼»¯ÆåÅÌ
-	void printBoard() const;// ´òÓ¡ÆåÅÌÄÚÈİ
-	int move(int currentX, int currentY, int nextX, int nextY);// ÒÆ¶¯
-	int isFaceup(int currentX, int currentY);// ·µ»ØÊÇ·ñ·­¿ª
-	int getplayer(int xret, int yret);// ·µ»ØÍæ¼ÒÆå×Ó
-	int existPiece(int xret, int yret);// ÊÇ·ñ´æÔÚÆå×Ó
-	std::string getBoardState();// ·µ»ØÆåÅÌ×´Ì¬
-	void setOpen(int x,int y); //·­¿ªÆå×Ó 
-	int getLevel(int x,int y);
+	void initialize(int type);// åˆå§‹åŒ–æ£‹ç›˜
+	void printBoard() const;// æ‰“å°æ£‹ç›˜å†…å®¹
+	int move(int currentX, int currentY, int nextX, int nextY);// ç§»åŠ¨
+	int isFaceup(int currentX, int currentY);// è¿”å›æ˜¯å¦ç¿»å¼€
+	int getplayer(int xret, int yret);// è¿”å›ç©å®¶æ£‹å­
+	int getLevel(int x, int y);//è¿”å›æ£‹å­ç­‰çº§
+	int existPiece(int xret, int yret);// æ˜¯å¦å­˜åœ¨æ£‹å­
+	std::string getBoardState();// è¿”å›æ£‹ç›˜çŠ¶æ€
+	void setOpen(int x,int y); //ç¿»å¼€æ£‹å­ 
 };
 #endif
