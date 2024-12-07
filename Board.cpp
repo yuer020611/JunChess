@@ -135,7 +135,6 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 				}
 				
 			}
-				
 			//出发点是行营
 			if ((currentX == 2 || currentX == 3 || currentX == 4 || currentX == 7 || currentX == 8 || currentX == 9) && (currentY == 1 || currentY == 2 || currentY == 3))
 				wret = 1;
@@ -144,12 +143,24 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 		if (nextX == currentX)
 		{
 			if (currentX == 1 || currentX == 5 || currentX == 6 || currentX == 11)
-				wret = 1;
+			{
+				if (board[nextX][(currentY + nextY)/2].getLevel() == 13)
+				{
+					wret = 1;
+				}
+			}
+				
 		}
 		if (nextY == currentY)
 		{
 			if (currentY == 0 || currentY == 4)
-				wret = 1;
+			{
+				if (board[(currentX + nextX) / 2][currentY].getLevel() == 13)
+				{
+					wret = 1;
+				}
+			}
+				
 		}
 	}
 	//多格铁路
@@ -158,12 +169,73 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 		if (nextX == currentX)
 		{
 			if (currentX == 1 || currentX == 5 || currentX == 6 || currentX == 11)
-				wret = 1;
+			{
+				if (currentY > nextY)
+				{
+					int allnull = 1;
+					for (int i = nextY + 1; i < currentY; i++)
+					{
+						if (board[currentX][i].getLevel() != 13)
+						{
+							allnull = 0;
+							break;
+						}
+					}
+					if (allnull == 1)
+						wret = 1;
+				}
+				if (nextY > currentY)
+				{
+					int allnull = 1;
+					for (int i = currentY + 1; i < nextY; i++)
+					{
+						if (board[currentX][i].getLevel() != 13)
+						{
+							allnull = 0;
+							break;
+						}
+					}
+					if (allnull == 1)
+						wret = 1;
+				}
+				
+			}
+				
 		}
 		if (nextY == currentY)
 		{
 			if (currentY == 0 || currentY == 4)
-				wret = 1;
+			{
+				if (currentX > nextX)
+				{
+					int allnull = 1;
+					for (int i = nextX + 1; i < currentX; i++)
+					{
+						if (board[i][currentY].getLevel() != 13)
+						{
+							allnull = 0;
+							break;
+						}
+					}
+					if (allnull == 1)
+						wret = 1;
+				}
+				if (nextX > currentX)
+				{
+					int allnull = 1;
+					for (int i = currentX + 1; i < nextX; i++)
+					{
+						if (board[i][currentY].getLevel() != 13)
+						{
+							allnull = 0;
+							break;
+						}
+					}
+					if (allnull == 1)
+						wret = 1;
+				}
+			}
+				
 		}
 	}
 
@@ -248,7 +320,6 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 							//printf("吃背着的棋子");
 							//清空当前棋子
 							board[currentX][currentY].setLevel(13);
-							board[nextX][nextY].setIsFaceUp(1);
 							return 1;
 
 						}
@@ -274,15 +345,25 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 			}
 			else
 			{
-				//把当前棋子移过去
-				//printf("大吃小");
-				board[nextX][nextY].setPosition(currentX, currentY);
-				board[nextX][nextY].setLevel(board[currentX][currentY].getLevel());
-				board[nextX][nextY].setPlayer(board[currentX][currentY].getPlayer());
-				board[nextX][nextY].setIsFaceUp(board[currentX][currentY].getIsFaceUp());
-				//清空当前棋子
-				board[currentX][currentY].setLevel(13);
-				return 1;
+				if (levelcr == 10)
+				{
+					//printf("炸弹吃对面 两个一起死");
+					board[currentX][currentY].setLevel(13);
+					board[nextX][nextY].setLevel(13);
+				}
+				else
+				{
+					//把当前棋子移过去
+					//printf("大吃小");
+					board[nextX][nextY].setPosition(currentX, currentY);
+					board[nextX][nextY].setLevel(board[currentX][currentY].getLevel());
+					board[nextX][nextY].setPlayer(board[currentX][currentY].getPlayer());
+					board[nextX][nextY].setIsFaceUp(board[currentX][currentY].getIsFaceUp());
+					//清空当前棋子
+					board[currentX][currentY].setLevel(13);
+					return 1;
+				}
+				
 			}
 		}
 	}
