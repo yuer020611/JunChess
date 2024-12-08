@@ -1,4 +1,4 @@
-//版本号：1008616
+//版本号：1.0
 #include "board.h"
 
 //初始化
@@ -116,6 +116,34 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 	}
 
 	int xydiff = abs(nextX + nextY - currentX - currentY);
+	if (xydiff == 0)
+	{
+		if (currentX == nextX)
+		{
+			printf("未动");
+			return 0;
+		}
+		else
+		{
+			//目的地是行营
+			if ((nextX == 2 && (nextY == 1 || nextY == 3)) || (nextX == 3 && (nextY == 2)) || (nextX == 4 && (nextY == 1 || nextY == 3)) || (nextX == 7 && (nextY == 1 || nextY == 3)) || (nextX == 8 && (nextY == 2)) || (nextX == 9 && (nextY == 1 || nextY == 3)))
+			{
+				if (levelnt != 13)
+				{
+					std::cout << "行营有棋了" << std::endl;
+				}
+				else
+				{
+					wret = 1;
+				}
+
+			}
+			//出发点是行营
+			if ((currentX == 2 && (currentY == 1 || currentY == 3)) || (currentX == 3 && (currentY == 2)) || (currentX == 4 && (currentY == 1 || currentY == 3)) || (currentX == 7 && (currentY == 1 || currentY == 3)) || (currentX == 8 && (currentY == 2)) || (currentX == 9 && (currentY == 1 || currentY == 3)))
+				wret = 1;
+		}
+
+	}
 	if (xydiff == 1)
 		wret = 1;
 	if (xydiff == 2)
@@ -124,7 +152,7 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 		if (abs(nextX - currentX) == 1 && abs(nextY - currentY) == 1)
 		{
 			//目的地是行营
-			if ((nextX == 2 || nextX == 3 || nextX == 4 || nextX == 7 || nextX == 8 || nextX == 9) && (nextY == 1 || nextY == 2 || nextY == 3))
+			if ((nextX == 2 && (nextY == 1 || nextY == 3)) || (nextX == 3 && (nextY == 2)) || (nextX == 4 && (nextY == 1 || nextY == 3)) || (nextX == 7 && (nextY == 1 || nextY == 3)) || (nextX == 8 && (nextY == 2)) || (nextX == 9 && (nextY == 1 || nextY == 3)))
 			{
 				if (levelnt != 13)
 				{
@@ -137,7 +165,7 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 				
 			}
 			//出发点是行营
-			if ((currentX == 2 || currentX == 3 || currentX == 4 || currentX == 7 || currentX == 8 || currentX == 9) && (currentY == 1 || currentY == 2 || currentY == 3))
+			if ((currentX == 2 && (currentY == 1 || currentY == 3)) || (currentX == 3 && (currentY == 2)) || (currentX == 4 && (currentY == 1 || currentY == 3)) || (currentX == 7 && (currentY == 1 || currentY == 3)) || (currentX == 8 && (currentY == 2)) || (currentX == 9 && (currentY == 1 || currentY == 3)))
 				wret = 1;
 		}
 		//动两格铁路
@@ -243,7 +271,7 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 	}
 
 
-	if (wret == 0 )
+	if (wret == 0)
 	{
 		printf("移动不合法");
 		std::cout << "bushucha:" << wret;
