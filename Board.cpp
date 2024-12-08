@@ -1,4 +1,4 @@
-//版本号：1008615
+//版本号：1008616
 #include "board.h"
 
 //初始化
@@ -45,7 +45,7 @@ void Board::initialize(int type)
 				else if (i == 11 && (j == 0 || j == 2)) {
 					board[i][j] = Piece(11, 2, 1, i, j);  // 下方的地雷
 				}
-				else if ((i == 7 && (j == 1 || j == 3)) || (i == 9 && j == 2) || (i == 10 && (j == 1 || j == 3))) {
+				else if ((i == 7 && (j == 1 || j == 3)) || (i == 8 && j == 2) || (i == 9 && (j == 1 || j == 3))) {
 					board[i][j] = Piece(13, 2, 1, i, j);  // 下方的行营区域
 				}
 				else {
