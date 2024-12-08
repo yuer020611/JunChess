@@ -1,4 +1,4 @@
-//版本号：1008614
+//版本号：1008615
 #include "board.h"
 
 //初始化
@@ -23,7 +23,7 @@ void Board::initialize(int type)
 					board[i][j] = Piece(11, 1, 1, i, j);  // 上方的地雷
 				}
 				else if ((i == 2 && (j == 1 || j == 3)) || (i == 3 && j == 2) || (i == 4 && (j == 1 || j == 3))) {
-					board[i][j] = Piece(13, 1, 0, i, j);  // 上方的行营区域
+					board[i][j] = Piece(13, 1, 1, i, j);  // 上方的行营区域
 				}
 				else {
 					if (!pieceLevels1.empty()) {
@@ -46,7 +46,7 @@ void Board::initialize(int type)
 					board[i][j] = Piece(11, 2, 1, i, j);  // 下方的地雷
 				}
 				else if ((i == 7 && (j == 1 || j == 3)) || (i == 9 && j == 2) || (i == 10 && (j == 1 || j == 3))) {
-					board[i][j] = Piece(13, 2, 0, i, j);  // 下方的行营区域
+					board[i][j] = Piece(13, 2, 1, i, j);  // 下方的行营区域
 				}
 				else {
 					if (!pieceLevels2.empty()) {
@@ -87,7 +87,7 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 	int levelnt = board[nextX][nextY].getLevel();
 	int playcr = board[currentX][currentY].getPlayer();
 	int playnt = board[nextX][nextY].getPlayer();
-	int wret = 0,whe = 0;
+	int wret = 0;
 	
 	//要过河
 	if (((currentX < 5 || currentX == 5) && nextX > 5) || ((nextX < 5 || nextX == 5) && currentX > 5))
@@ -96,7 +96,11 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 		{
 			if (nextY == 0 || nextY == 2 || nextY == 4)
 			{
-				whe = 1;
+			}
+			else
+			{
+				printf("过河不合法");
+				return 0;
 			}
 		}
 	}
@@ -137,7 +141,7 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 				wret = 1;
 		}
 		//动两格铁路
-		if (nextX == currentX)
+		if (nextX == currentX && (currentX == 1 || currentX == 5 || currentX == 6 || currentX == 11))
 		{
 			if (currentX == 1 || currentX == 5 || currentX == 6 || currentX == 11)
 			{
@@ -148,7 +152,7 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 			}
 				
 		}
-		if (nextY == currentY)
+		if (nextY == currentY && (currentX > 0 && currentX < 12) && (nextX > 0 && nextX < 12))
 		{
 			if (currentY == 0 || currentY == 4)
 			{
@@ -239,9 +243,10 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 	}
 
 
-	if (wret == 0 || whe == 0)
+	if (wret == 0 )
 	{
 		printf("移动不合法");
+		std::cout << "bushucha:" << wret;
 		return 0;
 	}
 
