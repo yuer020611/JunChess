@@ -1,4 +1,4 @@
-//版本号：1.3
+//版本号：1.4
 #include "board.h"
 
 //初始化
@@ -521,6 +521,8 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 					//printf("炸弹吃对面 两个一起死");
 					board[currentX][currentY].setLevel(13);
 					board[nextX][nextY].setLevel(13);
+					board[nextX][nextY].setIsFaceUp(1);
+					return 1;
 				}
 				else
 				{
