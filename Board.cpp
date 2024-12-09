@@ -1,4 +1,4 @@
-//版本号：1.1
+//版本号：1.2
 #include "board.h"
 
 //初始化
@@ -59,12 +59,7 @@ void Board::initialize(int type)
 			}
 		}
 	}
-	else
-	{
-
-	}
 }
-
 //打印棋盘
 void Board::printBoard() const {
 	for (int i = 0; i < BOARD_ROWS; ++i) {
@@ -169,9 +164,9 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 				wret = 1;
 		}
 		//动两格铁路
-		if (nextX == currentX && (currentX == 1 || currentX == 5 || currentX == 6 || currentX == 11))
+		if (nextX == currentX && (currentX == 1 || currentX == 5 || currentX == 6 || currentX == 10))
 		{
-			if (currentX == 1 || currentX == 5 || currentX == 6 || currentX == 11)
+			if (currentX == 1 || currentX == 5 || currentX == 6 || currentX == 10)
 			{
 				if (board[nextX][(currentY + nextY)/2].getLevel() == 13)
 				{
@@ -197,7 +192,7 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 	{
 		if (nextX == currentX)
 		{
-			if (currentX == 1 || currentX == 5 || currentX == 6 || currentX == 11)
+			if (currentX == 1 || currentX == 5 || currentX == 6 || currentX == 10)
 			{
 				if (currentY > nextY)
 				{
