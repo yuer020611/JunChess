@@ -1,10 +1,11 @@
-//版本号：1.2
+//版本号：1.3
 #include "board.h"
 
 //初始化
 void Board::initialize(int type)
 {
-	if (type == 1){
+	if (type == 1)
+	{
 		// 先把棋盘上的每个位置都初始化为空（level = 13）
 		for (int i = 0; i < BOARD_ROWS; ++i) {
 			for (int j = 0; j < BOARD_COLS; ++j) {
@@ -59,6 +60,131 @@ void Board::initialize(int type)
 			}
 		}
 	}
+	//简单人机
+	else if (type == 2)
+	{
+		// 先把棋盘上的每个位置都初始化为空（level = 13）
+		for (int i = 0; i < BOARD_ROWS; ++i) {
+			for (int j = 0; j < BOARD_COLS; ++j) {
+				board[i][j] = Piece(13, 0, false, i, j);  // 初始化为空
+			}
+		}
+		// 设置上方棋子
+		std::srand(std::time(0));
+		std::vector<int> pieceLevels1 = {8, 7, 7, 6, 6, 5, 5, 4, 4, 3, 3, 3, 2, 2, 2, 1, 1, 1, 10, 10, 11 };
+		int silinghome = std::rand() % 5;
+		for (int i = 0; i <= 5; ++i) {
+			for (int j = 0; j <= 4; ++j) {
+				if (i == 0 && j == 3) {
+					board[i][j] = Piece(12, 1, 1, i, j);  // 上方的军旗
+				}
+				else if (i == 1 && j == silinghome)
+				{
+					board[i][j] = Piece(9, 1, 0, i, j);  // 上方的司令
+				}
+				else if ((i == 0 && (j == 2 || j == 4))) {
+					board[i][j] = Piece(11, 1, 1, i, j);  // 上方的地雷
+				}
+				else if ((i == 2 && (j == 1 || j == 3)) || (i == 3 && j == 2) || (i == 4 && (j == 1 || j == 3))) {
+					board[i][j] = Piece(13, 1, 1, i, j);  // 上方的行营区域
+				}
+				else {
+					if (!pieceLevels1.empty()) {
+						int length = pieceLevels1.size();
+						int randomNumber = std::rand() % length;  // 0 到 length-1 之间的随机数
+						board[i][j] = Piece(pieceLevels1[randomNumber], 1, 0, i, j);  // 其他位置随机生成棋子
+						pieceLevels1.erase(pieceLevels1.begin() + randomNumber);
+					}
+				}
+			}
+		}
+		// 设置下方棋子
+		std::vector<int> pieceLevels2 = { 9, 8, 7, 7, 6, 6, 5, 5, 4, 4, 3, 3, 3, 2, 2, 2, 1, 1, 1, 10, 10, 11 };
+		for (int i = 6; i <= 12; ++i) {
+			for (int j = 0; j <= 4; ++j) {
+				if (i == 11 && j == 1) {
+					board[i][j] = Piece(12, 2, 1, i, j);  // 下方的军旗
+				}
+				else if (i == 11 && (j == 0 || j == 2)) {
+					board[i][j] = Piece(11, 2, 1, i, j);  // 下方的地雷
+				}
+				else if ((i == 7 && (j == 1 || j == 3)) || (i == 8 && j == 2) || (i == 9 && (j == 1 || j == 3))) {
+					board[i][j] = Piece(13, 2, 1, i, j);  // 下方的行营区域
+				}
+				else {
+					if (!pieceLevels2.empty()) {
+						int length = pieceLevels2.size();
+						int randomNumber = std::rand() % length;  // 0 到 length-1 之间的随机数
+						board[i][j] = Piece(pieceLevels2[randomNumber], 2, 0, i, j);  // 其他位置随机生成棋子
+						pieceLevels2.erase(pieceLevels2.begin() + randomNumber);
+					}
+				}
+			}
+		}
+	}
+	//困难人机
+	else if (type == 3)
+	{
+		// 先把棋盘上的每个位置都初始化为空（level = 13）
+		for (int i = 0; i < BOARD_ROWS; ++i) {
+			for (int j = 0; j < BOARD_COLS; ++j) {
+				board[i][j] = Piece(13, 0, false, i, j);  // 初始化为空
+			}
+		}
+		// 设置上方棋子
+		std::srand(std::time(0));
+		std::vector<int> pieceLevels1 = { 8, 7, 7, 6, 6, 5, 5, 4, 4, 3, 3, 3, 2, 2, 2, 1, 1, 1, 10, 10, 11 };
+		int silinghome = std::rand() % 5;
+		for (int i = 0; i <= 5; ++i) {
+			for (int j = 0; j <= 4; ++j) {
+				if (i == 0 && j == 3) {
+					board[i][j] = Piece(12, 1, 1, i, j);  // 上方的军旗
+				}
+				else if (i == 5 && j == silinghome)
+				{
+					board[i][j] = Piece(9, 1, 0, i, j);  // 上方的司令
+				}
+				else if ((i == 0 && (j == 2 || j == 4))) {
+					board[i][j] = Piece(11, 1, 1, i, j);  // 上方的地雷
+				}
+				else if ((i == 2 && (j == 1 || j == 3)) || (i == 3 && j == 2) || (i == 4 && (j == 1 || j == 3))) {
+					board[i][j] = Piece(13, 1, 1, i, j);  // 上方的行营区域
+				}
+				else {
+					if (!pieceLevels1.empty()) {
+						int length = pieceLevels1.size();
+						int randomNumber = std::rand() % length;  // 0 到 length-1 之间的随机数
+						board[i][j] = Piece(pieceLevels1[randomNumber], 1, 0, i, j);  // 其他位置随机生成棋子
+						pieceLevels1.erase(pieceLevels1.begin() + randomNumber);
+					}
+				}
+			}
+		}
+		// 设置下方棋子
+		std::vector<int> pieceLevels2 = { 9, 8, 7, 7, 6, 6, 5, 5, 4, 4, 3, 3, 3, 2, 2, 2, 1, 1, 1, 10, 10, 11 };
+		for (int i = 6; i <= 12; ++i) {
+			for (int j = 0; j <= 4; ++j) {
+				if (i == 11 && j == 1) {
+					board[i][j] = Piece(12, 2, 1, i, j);  // 下方的军旗
+				}
+				else if (i == 11 && (j == 0 || j == 2)) {
+					board[i][j] = Piece(11, 2, 1, i, j);  // 下方的地雷
+				}
+				else if ((i == 7 && (j == 1 || j == 3)) || (i == 8 && j == 2) || (i == 9 && (j == 1 || j == 3))) {
+					board[i][j] = Piece(13, 2, 1, i, j);  // 下方的行营区域
+				}
+				else {
+					if (!pieceLevels2.empty()) {
+						int length = pieceLevels2.size();
+						int randomNumber = std::rand() % length;  // 0 到 length-1 之间的随机数
+						board[i][j] = Piece(pieceLevels2[randomNumber], 2, 0, i, j);  // 其他位置随机生成棋子
+						pieceLevels2.erase(pieceLevels2.begin() + randomNumber);
+					}
+				}
+			}
+		}
+	}
+
 }
 //打印棋盘
 void Board::printBoard() const {
