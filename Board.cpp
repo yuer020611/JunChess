@@ -1,4 +1,4 @@
-//版本号：1.0
+//版本号：1.1
 #include "board.h"
 
 //初始化
@@ -270,6 +270,16 @@ int Board::move(int currentX, int currentY, int nextX, int nextY) {
 		}
 	}
 
+
+	//目的地是行营
+	if ((nextX == 2 && (nextY == 1 || nextY == 3)) || (nextX == 3 && (nextY == 2)) || (nextX == 4 && (nextY == 1 || nextY == 3)) || (nextX == 7 && (nextY == 1 || nextY == 3)) || (nextX == 8 && (nextY == 2)) || (nextX == 9 && (nextY == 1 || nextY == 3)))
+	{
+		if (levelnt != 13)
+		{
+			std::cout << "行营有棋了" << std::endl;
+			return 0;
+		}
+	}
 
 	if (wret == 0)
 	{
