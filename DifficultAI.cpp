@@ -254,23 +254,41 @@ std::string DifficultAI::getNextStep(Board board) {
 			}
 			if (xyi == 0)
 			{
-				finalStep[2] = 2, finalStep[3] = 1;
+				if (isValidMove(2, 1, nowBoard, nowBoard[mx][my], zhaDanX, zhaDanY))
+				{
+					finalStep[2] = 2, finalStep[3] = 1;
+				}
+
 			}
 			else if (xyi == 1)
 			{
-				finalStep[2] = 2, finalStep[3] = 3;
+				if (isValidMove(2, 3, nowBoard, nowBoard[mx][my], zhaDanX, zhaDanY))
+				{
+					finalStep[2] = 2, finalStep[3] = 3;
+				}
+
 			}
 			else if (xyi == 2)
 			{
-				finalStep[2] = 3, finalStep[3] = 2;
+				if (isValidMove(3, 2, nowBoard, nowBoard[mx][my], zhaDanX, zhaDanY))
+				{
+					finalStep[2] = 3, finalStep[3] = 2;
+				}
+
 			}
 			else if (xyi == 3)
 			{
-				finalStep[2] = 4, finalStep[3] = 1;
+				if (isValidMove(4, 1, nowBoard, nowBoard[mx][my], zhaDanX, zhaDanY))
+				{
+					finalStep[2] = 4, finalStep[3] = 1;
+				}
 			}
 			else if (xyi == 4)
 			{
-				finalStep[2] = 4, finalStep[3] = 3;
+				if (isValidMove(4, 3, nowBoard, nowBoard[mx][my], zhaDanX, zhaDanY))
+				{
+					finalStep[2] = 4, finalStep[3] = 3;
+				}
 			}
 			if (finalStep[3] != -1)
 			{
@@ -310,6 +328,7 @@ std::string DifficultAI::getNextStep(Board board) {
 		}
 		if (enemy2StepNum > 3)//4步及以上
 		{
+			
 			if (highestLevel2 > 18)//旅长以上
 			{
 				if (highestLevel2 > 20)//军长以上
@@ -372,25 +391,44 @@ std::string DifficultAI::getNextStep(Board board) {
 							}
 
 						}
+						
 						if (xyi == 0)
 						{
-							finalStep[2] = 2, finalStep[3] = 1;
+							if (isValidMove(2 ,1, nowBoard, nowBoard[mx][my], mx, my))
+							{
+								finalStep[2] = 2, finalStep[3] = 1;
+							}
+							
 						}
 						else if (xyi == 1)
 						{
-							finalStep[2] = 2, finalStep[3] = 3;
+							if (isValidMove(2, 3, nowBoard, nowBoard[mx][my], mx, my))
+							{
+								finalStep[2] = 2, finalStep[3] = 3;
+							}
+							
 						}
 						else if (xyi == 2)
 						{
-							finalStep[2] = 3, finalStep[3] = 2;
+							if (isValidMove(3, 2, nowBoard, nowBoard[mx][my], mx, my))
+							{
+								finalStep[2] = 3, finalStep[3] = 2;
+							}
+							
 						}
 						else if (xyi == 3)
 						{
-							finalStep[2] = 4, finalStep[3] = 1;
+							if (isValidMove(4, 1, nowBoard, nowBoard[mx][my], mx, my))
+							{
+								finalStep[2] = 4, finalStep[3] = 1;
+							}
 						}
 						else if (xyi == 4)
 						{
-							finalStep[2] = 4, finalStep[3] = 3;
+							if (isValidMove(4, 3, nowBoard, nowBoard[mx][my], mx, my))
+							{
+								finalStep[2] = 4, finalStep[3] = 3 ;
+							}
 						}
 						if (finalStep[3] != -1)
 						{
@@ -504,23 +542,41 @@ std::string DifficultAI::getNextStep(Board board) {
 				}
 				if (xyi == 0)
 				{
-					finalStep[2] = 7, finalStep[3] = 1;
+					if (isValidMove(2, 1, nowBoard, nowBoard[mx][my], mx, my))
+					{
+						finalStep[2] = 2, finalStep[3] = 1;
+					}
+
 				}
 				else if (xyi == 1)
 				{
-					finalStep[2] = 7, finalStep[3] = 3;
+					if (isValidMove(2, 3, nowBoard, nowBoard[mx][my], mx, my))
+					{
+						finalStep[2] = 2, finalStep[3] = 3;
+					}
+
 				}
 				else if (xyi == 2)
 				{
-					finalStep[2] = 8, finalStep[3] = 2;
+					if (isValidMove(3, 2, nowBoard, nowBoard[mx][my], mx, my))
+					{
+						finalStep[2] = 3, finalStep[3] = 2;
+					}
+
 				}
 				else if (xyi == 3)
 				{
-					finalStep[2] = 9, finalStep[3] = 1;
+					if (isValidMove(4, 1, nowBoard, nowBoard[mx][my], mx, my))
+					{
+						finalStep[2] = 4, finalStep[3] = 1;
+					}
 				}
 				else if (xyi == 4)
 				{
-					finalStep[2] = 9, finalStep[3] = 3;
+					if (isValidMove(4, 3, nowBoard, nowBoard[mx][my], mx, my))
+					{
+						finalStep[2] = 4, finalStep[3] = 3;
+					}
 				}
 				if (finalStep[3] != -1)
 				{
