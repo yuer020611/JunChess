@@ -234,61 +234,43 @@ std::string DifficultAI::getNextStep(Board board) {
 		if (zhaDanX != -1)//如果有炸弹
 		{
 			bool a[5];
-			a[0] = whexingying(zhaDanX, zhaDanY ,2, 1);
-			a[1] = whexingying(zhaDanX, zhaDanY, 2, 3);
-			a[2] = whexingying(zhaDanX, zhaDanY, 3, 2);
-			a[3] = whexingying(zhaDanX, zhaDanY, 4, 1);
-			a[4] = whexingying(zhaDanX, zhaDanY, 4, 3);
+			int x[5] = { 2, 2, 3, 4, 4 };
+			int y[5] = { 1, 3, 2, 1, 3 };
 			int retxingyingmove = 0, xyi = -1;
 			for (xyi; xyi < 5; xyi++)
 			{
 				if (xyi > -1)
 				{
-					retxingyingmove = retxingyingmove + a[xyi];
-					if (retxingyingmove > -1)
+					if (isValidMove(x[xyi], y[xyi], nowBoard, nowBoard[zhaDanX][zhaDanY], zhaDanX, zhaDanY))
 					{
-						break;
+						if (whexingying(zhaDanX,zhaDanY,x[xyi],y[xyi]))
+						{
+							break;
+						}
 					}
 				}
-				
 			}
 			if (xyi == 0)
 			{
-				if (isValidMove(2, 1, nowBoard, nowBoard[mx][my], zhaDanX, zhaDanY))
-				{
-					finalStep[2] = 2, finalStep[3] = 1;
-				}
-
+				finalStep[2] = 2, finalStep[3] = 1;
 			}
 			else if (xyi == 1)
 			{
-				if (isValidMove(2, 3, nowBoard, nowBoard[mx][my], zhaDanX, zhaDanY))
-				{
-					finalStep[2] = 2, finalStep[3] = 3;
-				}
+				finalStep[2] = 2, finalStep[3] = 3;
 
 			}
 			else if (xyi == 2)
 			{
-				if (isValidMove(3, 2, nowBoard, nowBoard[mx][my], zhaDanX, zhaDanY))
-				{
-					finalStep[2] = 3, finalStep[3] = 2;
-				}
+				finalStep[2] = 3, finalStep[3] = 2;
 
 			}
 			else if (xyi == 3)
 			{
-				if (isValidMove(4, 1, nowBoard, nowBoard[mx][my], zhaDanX, zhaDanY))
-				{
-					finalStep[2] = 4, finalStep[3] = 1;
-				}
+				finalStep[2] = 4, finalStep[3] = 1;
 			}
 			else if (xyi == 4)
 			{
-				if (isValidMove(4, 3, nowBoard, nowBoard[mx][my], zhaDanX, zhaDanY))
-				{
-					finalStep[2] = 4, finalStep[3] = 3;
-				}
+				finalStep[2] = 4, finalStep[3] = 3;
 			}
 			if (finalStep[3] != -1)
 			{
@@ -347,7 +329,8 @@ std::string DifficultAI::getNextStep(Board board) {
 				}
 				if (finalStep[0] == -1)//既不杀军旗，也不杀军长及以上也无路径
 				{
-					printf("here is arrive ahsdhaidhiaosdjaijdoiasjdiosa");
+
+					//找到最大的，躲到ai方行营
 					int mx = -1, my = -1, ml = -1;
 					for (int i = -1; i < 2; i++)
 					{
@@ -373,62 +356,43 @@ std::string DifficultAI::getNextStep(Board board) {
 					if (ml != -1)
 					{
 						bool a[5];
-						a[0] = whexingying(mx, my, 2, 1);
-						a[1] = whexingying(mx, my, 2, 3);
-						a[2] = whexingying(mx, my, 3, 2);
-						a[3] = whexingying(mx, my, 4, 1);
-						a[4] = whexingying(mx, my, 4, 3);
+						int x[5] = { 2, 2, 3, 4, 4 };
+						int y[5] = { 1, 3, 2, 1, 3 };
 						int retxingyingmove = 0, xyi = -1;
 						for (xyi; xyi < 5; xyi++)
 						{
 							if (xyi > -1)
 							{
-								retxingyingmove = retxingyingmove + a[xyi];
-								if (retxingyingmove > -1)
+								if (isValidMove(x[xyi], y[xyi], nowBoard, nowBoard[mx][my], mx, my))
 								{
-									break;
+									if (whexingying(mx, my, x[xyi], y[xyi]))
+									{
+										break;
+									}
 								}
 							}
-
 						}
-						
 						if (xyi == 0)
 						{
-							if (isValidMove(2 ,1, nowBoard, nowBoard[mx][my], mx, my))
-							{
-								finalStep[2] = 2, finalStep[3] = 1;
-							}
-							
+							finalStep[2] = 2, finalStep[3] = 1;
 						}
 						else if (xyi == 1)
 						{
-							if (isValidMove(2, 3, nowBoard, nowBoard[mx][my], mx, my))
-							{
-								finalStep[2] = 2, finalStep[3] = 3;
-							}
-							
+							finalStep[2] = 2, finalStep[3] = 3;
+
 						}
 						else if (xyi == 2)
 						{
-							if (isValidMove(3, 2, nowBoard, nowBoard[mx][my], mx, my))
-							{
-								finalStep[2] = 3, finalStep[3] = 2;
-							}
-							
+							finalStep[2] = 3, finalStep[3] = 2;
+
 						}
 						else if (xyi == 3)
 						{
-							if (isValidMove(4, 1, nowBoard, nowBoard[mx][my], mx, my))
-							{
-								finalStep[2] = 4, finalStep[3] = 1;
-							}
+							finalStep[2] = 4, finalStep[3] = 1;
 						}
 						else if (xyi == 4)
 						{
-							if (isValidMove(4, 3, nowBoard, nowBoard[mx][my], mx, my))
-							{
-								finalStep[2] = 4, finalStep[3] = 3 ;
-							}
+							finalStep[2] = 4, finalStep[3] = 3;
 						}
 						if (finalStep[3] != -1)
 						{
@@ -505,7 +469,7 @@ std::string DifficultAI::getNextStep(Board board) {
 		}
 		if (finalStep[3] == -1)//不杀军旗
 		{
-			//找到最大的
+			//找到最大的，然后进入人类方行营
 			int mx, my = -1, ml = -1;
 			for (int i = 0; i < 11; i++)
 			{
@@ -522,61 +486,43 @@ std::string DifficultAI::getNextStep(Board board) {
 			if (ml != -1)
 			{
 				bool a[5];
-				a[0] = whexingying(mx, my, 7, 1);
-				a[1] = whexingying(mx, my, 7, 3);
-				a[2] = whexingying(mx, my, 8, 2);
-				a[3] = whexingying(mx, my, 9, 1);
-				a[4] = whexingying(mx, my, 9, 3);
+				int x[5] = { 7, 7, 8, 9, 9 };
+				int y[5] = { 1, 3, 2, 1, 3 };
 				int retxingyingmove = 0, xyi = -1;
 				for (xyi; xyi < 5; xyi++)
 				{
 					if (xyi > -1)
 					{
-						retxingyingmove = retxingyingmove + a[xyi];
-						if (retxingyingmove > -1)
+						if (isValidMove(x[xyi], y[xyi], nowBoard, nowBoard[mx][my], mx, my))
 						{
-							break;
+							if (whexingying(mx, my, x[xyi], y[xyi]))
+							{
+								break;
+							}
 						}
 					}
-
 				}
 				if (xyi == 0)
 				{
-					if (isValidMove(2, 1, nowBoard, nowBoard[mx][my], mx, my))
-					{
-						finalStep[2] = 2, finalStep[3] = 1;
-					}
-
+					finalStep[2] = 7, finalStep[3] = 1;
 				}
 				else if (xyi == 1)
 				{
-					if (isValidMove(2, 3, nowBoard, nowBoard[mx][my], mx, my))
-					{
-						finalStep[2] = 2, finalStep[3] = 3;
-					}
+					finalStep[2] = 7, finalStep[3] = 3;
 
 				}
 				else if (xyi == 2)
 				{
-					if (isValidMove(3, 2, nowBoard, nowBoard[mx][my], mx, my))
-					{
-						finalStep[2] = 3, finalStep[3] = 2;
-					}
+					finalStep[2] = 8, finalStep[3] = 2;
 
 				}
 				else if (xyi == 3)
 				{
-					if (isValidMove(4, 1, nowBoard, nowBoard[mx][my], mx, my))
-					{
-						finalStep[2] = 4, finalStep[3] = 1;
-					}
+					finalStep[2] = 9, finalStep[3] = 1;
 				}
 				else if (xyi == 4)
 				{
-					if (isValidMove(4, 3, nowBoard, nowBoard[mx][my], mx, my))
-					{
-						finalStep[2] = 4, finalStep[3] = 3;
-					}
+					finalStep[2] = 9, finalStep[3] = 3;
 				}
 				if (finalStep[3] != -1)
 				{
