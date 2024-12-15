@@ -133,12 +133,22 @@ void Board::initialize(int type)
 		}
 		// 设置上方棋子
 		std::srand(std::time(0));
-		std::vector<int> pieceLevels1 = { 8, 7, 7, 6, 6, 5, 5, 4, 4, 3, 3, 3, 2, 2, 2, 1, 1, 1, 10, 10, 11 };
+		std::vector<int> pieceLevels1 = { 8, 7, 7, 6, 6, 5, 5, 4, 4, 3, 3, 3, 2, 2, 2, 1, 1, 1, 11 };
 		int silinghome = std::rand() % 5;
+		int zhadan1home = std::rand() % 5;
+		int zhadan2home = std::rand() % 5;
 		for (int i = 0; i <= 5; ++i) {
 			for (int j = 0; j <= 4; ++j) {
 				if (i == 0 && j == 3) {
 					board[i][j] = Piece(12, 1, 1, i, j);  // 上方的军旗
+				}
+				else if (i == 1 && j == zhadan1home)
+				{
+					board[i][j] = Piece(10, 1, 0, i, j);  // 上方的炸弹1
+				}
+				else if (i == 1 && j == zhadan2home)
+				{
+					board[i][j] = Piece(10, 1, 0, i, j);  // 上方的炸弹2
 				}
 				else if (i == 5 && j == silinghome)
 				{
