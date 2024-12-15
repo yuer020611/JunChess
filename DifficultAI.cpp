@@ -1,900 +1,884 @@
 #include "DifficultAI.h"
 
-//enemyX1 , enemyY1 highestLevel1 5²½Ö®ÄÚµĞÈË    enemyX2 5²½Ö®Íâ  enemy1StepNum É±µĞÈË1²½Êı£¬enemy1Step[4]É±µĞÈË1³õÊ¼ÓëµÚÒ»²½ £¬enemy2StepNumÍ¬Ñù 
-// zhaDanX,zhaDanY,Õ¨µ¯Î»ÖÃ Õ¨µ¯½øĞĞÓªStepÇë×Ô¼ºµ÷ÓÃº¯Êı 
-//µĞ·½³¡ÉÏÎÒ·½µÈ¼¶×î¸ßÆå×Ó£¨²»ÔÚĞĞÓªÄÚ£©£¬ÒòÎªÂß¼­ÒªÒ»¸öÒ»¸ö³¢ÊÔ±£»¤ £¬Ğ´ÔÚÂß¼­ÅĞ¶ÏÀïÃæ°Ñ£¬¿´µ÷ÓÃº¯ÊıµÄstepNum µÈ²»µÈÓÚ1 
+//enemyX1 , enemyY1 highestLevel1 5æ­¥ä¹‹å†…æ•Œäºº    enemyX2 5æ­¥ä¹‹å¤–  enemy1StepNum æ€æ•Œäºº1æ­¥æ•°ï¼Œenemy1Step[4]æ€æ•Œäºº1åˆå§‹ä¸ç¬¬ä¸€æ­¥ ï¼Œenemy2StepNumåŒæ ·
+// zhaDanX,zhaDanY,ç‚¸å¼¹ä½ç½® ç‚¸å¼¹è¿›è¡Œè¥Stepè¯·è‡ªå·±è°ƒç”¨å‡½æ•°
+//æ•Œæ–¹åœºä¸Šæˆ‘æ–¹ç­‰çº§æœ€é«˜æ£‹å­ï¼ˆä¸åœ¨è¡Œè¥å†…ï¼‰ï¼Œå› ä¸ºé€»è¾‘è¦ä¸€ä¸ªä¸€ä¸ªå°è¯•ä¿æŠ¤ ï¼Œå†™åœ¨é€»è¾‘åˆ¤æ–­é‡Œé¢æŠŠï¼Œçœ‹è°ƒç”¨å‡½æ•°çš„stepNum ç­‰ä¸ç­‰äº1
 
 
 
 std::string DifficultAI::getNextStep(Board board) {
-	int finalStep[4] = { -1, -1, -1, -1 };//Èç¹û·µ»Ø-1Ã»ÓĞ²Ù×÷
-	std::string status = board.getBoardState();//×÷±×¼ì²âËùÒÔÊÇÁíÒ»¸öº¯Êı 
-	int nowBoard[12][5];//¼ÇÂ¼µ±Ç°ÆåÅÌÇé¿ö 
-	// Ê¹ÓÃ×Ö·û´®Á÷À´·Ö¸î×Ö·û´®
-	std::stringstream ss(status);
-	char delimiter;
-	// Öğ¸ö¶ÁÈ¡Êı×Ö²¢´æÈëÊı×é
-	for (int i = 0; i < 12; i++) {
-		for (int j = 0; j<5; j++){
-			ss >> nowBoard[i][j];
-			ss >> delimiter;  // Ìø¹ı¶ººÅ
-		}
-	}
-	std::set<std::pair<int, int>> forbiddenSet = { { 2, 1 }, { 4, 1 }, { 7, 1 }, { 9, 1 }, { 3, 2 }, { 8, 2 }, { 2, 3 }, { 4, 3 }, { 7, 3 }, { 9, 3 } };
-	int enemyX1 = -1, enemyY1 = -1;//5²½Ö®ÄÚ×î¸ßµÈ¼¶µĞÈË£¬¿ÉÄÜ»áÓÃµ½£¬ÑØÓÃEasyAI 
-	int enemyX2 = -1, enemyY2 = -1;//5²½Ö®Íâ×î¸ß 
-	int highestLevel1 = 0;
-	int highestLevel2 = 0;
-	for (int i = 0; i<6; i++){
-		for (int j = 0; j<5; j++){
-			if (nowBoard[i][j] > 13 && nowBoard[i][j]<26 && nowBoard[i][j] - 13 > highestLevel2){
-				if (forbiddenSet.find({ i, j }) == forbiddenSet.end()){
-					if (abs(0 - i) + abs(3 - j) <= 5){
-						highestLevel1 = nowBoard[i][j] - 13;
-						enemyX1 = i, enemyY1 = j;
-					}
-					else{
-						highestLevel2 = nowBoard[i][j] - 13;
-						enemyX2 = i, enemyY2 = j;
-					}
-				}
-			}
-		}
-	}
-	// ¼ÆËã¾üÆìµÄ×î¶ÌÂ·¾¶
-	int junqiStepNum = INT_MAX;
-	int junqiStep[4] = { 0, 0, -1, -1 }; // [x, y, next_x, next_y]
-	for (int i = 0; i < 12; i++) {
-		for (int j = 0; j < 5; j++) {
-			if (nowBoard[i][j] >= 1 && nowBoard[i][j] < 10) {
-				int stepNum = 0;
-				int step[4]; // [x, y, next_x, next_y]
-				aStarToTarget(i, j, 11, 1, nowBoard, stepNum, step);
-				if (stepNum != -1 && stepNum < junqiStepNum) {
-					junqiStepNum = stepNum;
-					junqiStep[0] = step[0]; // µ±Ç°Æå×ÓÎ»ÖÃ
-					junqiStep[1] = step[1];
-					junqiStep[2] = step[2]; // ÏÂÒ»²½Î»ÖÃ
-					junqiStep[3] = step[3];
-				}
-			}
-		}
-	}
-	//std::cout<<"¾üÆì²½Êı"<<junqiStepNum<<std::endl;
-	//for(int i =0;i<4;i++){
-	// 	std::cout<<junqiStep[i]<<"  ";
-	//}
-	// ¼ÆËãµĞÈËµÄ×î¶ÌÂ·¾¶
-	int enemy1StepNum = INT_MAX;
-	int enemy1Step[4] = { 0, 0, -1, -1 }; // [x, y, next_x, next_y]
-	int enemy2StepNum = INT_MAX;
-	int enemy2Step[4] = { 0, 0, -1, -1 }; // [x, y, next_x, next_y]
-	if (enemyX1 != -1) {//Îå²½Ö®ÄÚµÄ 
-		for (int i = 0; i < 12; i++) {
-			for (int j = 0; j < 5; j++) {
-				if (nowBoard[i][j] >= 1 && nowBoard[i][j] <= 10) {
-					int stepNum = 0;
-					int step[4]; // [x, y, next_x, next_y]
-					aStarToTarget(i, j, enemyX1, enemyY1, nowBoard, stepNum, step);
-					//std::cout<<stepNum<<std::endl;
-					if (stepNum != -1 && stepNum < enemy1StepNum) {
-						enemy1StepNum = stepNum;
-						enemy1Step[0] = step[0]; // µ±Ç°Æå×ÓÎ»ÖÃ
-						enemy1Step[1] = step[1];
-						enemy1Step[2] = step[2]; // ÏÂÒ»²½Î»ÖÃ
-						enemy1Step[3] = step[3];
-					}
-				}
-			}
-		}
-	}
-	if (enemyX2 != -1) {//Îå²½Ö®ÍâµÄ 
-		for (int i = 0; i < 12; i++) {
-			for (int j = 0; j < 5; j++) {
-				if (nowBoard[i][j] >= 1 && nowBoard[i][j] <= 10) {
-					int stepNum = 0;
-					int step[4]; // [x, y, next_x, next_y]
-					aStarToTarget(i, j, enemyX2, enemyY2, nowBoard, stepNum, step);
-					//std::cout<<stepNum<<std::endl;
-					if (stepNum != -1 && stepNum < enemy2StepNum) {
-						enemy2StepNum = stepNum;
-						enemy2Step[0] = step[0]; // µ±Ç°Æå×ÓÎ»ÖÃ
-						enemy2Step[1] = step[1];
-						enemy2Step[2] = step[2]; // ÏÂÒ»²½Î»ÖÃ
-						enemy2Step[3] = step[3];
-					}
-				}
-			}
-		}
-	}
-	int zhaDanX = -1, zhaDanY = -1;
-	for (int i = 0; i < 6; i++) {
-		for (int j = 0; j < 5; j++) {
-			if (nowBoard[i][j] == 10) {
-				zhaDanX = i;
-				zhaDanY = j;
-			}
-		}
-	}
-	int mineLastX, mineLastY;
-	int highestMine = 0;
-	for (int i = 6; i < 12; i++) {
-		for (int j = 0; j < 5; j++) {
-			if (nowBoard[i][j] >= 1 && nowBoard[i][j] <= 10 && nowBoard[i][j] >highestMine) {
-				zhaDanX = i;
-				zhaDanY = j;
-				highestMine = nowBoard[i][j];
-			}
-		}
-	}
-	// std::cout<<"É±µĞ²½Êı"<<enemyStepNum<<std::endl;
-	//for(int i =0;i<4;i++){
-	//	std::cout<<enemyStep[i]<<"  ";
-	//ÒÔÏÂÁô¿Õ¾ÍÎªÔÚÊ²Ã´Ìõ¼şÏÂ½øĞĞÊ²Ã´²Ù×÷£¬×î¶ÌÂ·¾¶ÒÔ¼°µÚÒ»²½ÒÑËã³öÈçÉÏ£¬Ğ´ÍêºóÇëÉ¾µô¸ÃĞĞ×¢ÊÍ£¬¼Ç×¡½á¹ûÎªresultËÄ²½
-	//resultÊı×é£¬³õÊ¼ÎªËÄ¸ö-1£¬·­Æå×Ó½«Ç°Á©¸öÉèÎª¶ÔÓ¦Öµ£¬ÒÆ¶¯ÉèÖÃËÄ¸ö¶ÔÓ¦Öµ£¬ÊµÔÚÎŞ·¨ÒÆ¶¯²»¸³ÖµµçÄÔÎŞ·¨ÒÆ¶¯ 
-	int AIhighestLevel = 0;
-	int peoplehighestLevel = 0;
-	for (int i = 0; i<12; i++){
-		for (int j = 0; j<5; j++){
-			if (nowBoard[i][j] > 13 && nowBoard[i][j]<23 && nowBoard[i][j] - 13 > peoplehighestLevel){
-				peoplehighestLevel = nowBoard[i][j] - 13;
-			}
-			if (nowBoard[i][j] > 0 && nowBoard[i][j]<11 && nowBoard[i][j] > AIhighestLevel){
-				AIhighestLevel = nowBoard[i][j];
-			}
-		}
-	}
+    int finalStep[4] = { -1, -1, -1, -1 };//å¦‚æœè¿”å›-1æ²¡æœ‰æ“ä½œ
+    std::string status = board.getBoardState();//ä½œå¼Šæ£€æµ‹æ‰€ä»¥æ˜¯å¦ä¸€ä¸ªå‡½æ•°
+    int nowBoard[12][5];//è®°å½•å½“å‰æ£‹ç›˜æƒ…å†µ
+    // ä½¿ç”¨å­—ç¬¦ä¸²æµæ¥åˆ†å‰²å­—ç¬¦ä¸²
+    std::stringstream ss(status);
+    char delimiter;
+    // é€ä¸ªè¯»å–æ•°å­—å¹¶å­˜å…¥æ•°ç»„
+    for (int i = 0; i < 12; i++) {
+        for (int j = 0; j<5; j++){
+            ss >> nowBoard[i][j];
+            ss >> delimiter;  // è·³è¿‡é€—å·
+        }
+    }
+    std::set<std::pair<int, int>> forbiddenSet = { { 2, 1 }, { 4, 1 }, { 7, 1 }, { 9, 1 }, { 3, 2 }, { 8, 2 }, { 2, 3 }, { 4, 3 }, { 7, 3 }, { 9, 3 } };
+    int enemyX1 = -1, enemyY1 = -1;//5æ­¥ä¹‹å†…æœ€é«˜ç­‰çº§æ•Œäººï¼Œå¯èƒ½ä¼šç”¨åˆ°ï¼Œæ²¿ç”¨EasyAI
+    int enemyX2 = -1, enemyY2 = -1;//5æ­¥ä¹‹å¤–æœ€é«˜
+    int highestLevel1 = 0;
+    int highestLevel2 = 0;
+    for (int i = 0; i<6; i++){
+        for (int j = 0; j<5; j++){
+            if (nowBoard[i][j] > 13 && nowBoard[i][j]<26 && nowBoard[i][j] - 13 > highestLevel2){
+                if (forbiddenSet.find({ i, j }) == forbiddenSet.end()){
+                    if (abs(0 - i) + abs(3 - j) <= 5){
+                        highestLevel1 = nowBoard[i][j] - 13;
+                        enemyX1 = i, enemyY1 = j;
+                    }
+                    else{
+                        highestLevel2 = nowBoard[i][j] - 13;
+                        enemyX2 = i, enemyY2 = j;
+                    }
+                }
+            }
+        }
+    }
+    // è®¡ç®—å†›æ——çš„æœ€çŸ­è·¯å¾„
+    int junqiStepNum = INT_MAX;
+    int junqiStep[4] = { 0, 0, -1, -1 }; // [x, y, next_x, next_y]
+    for (int i = 0; i < 12; i++) {
+        for (int j = 0; j < 5; j++) {
+            if (nowBoard[i][j] >= 1 && nowBoard[i][j] < 10) {
+                int stepNum = 0;
+                int step[4]; // [x, y, next_x, next_y]
+                aStarToTarget(i, j, 11, 1, nowBoard, stepNum, step);
+                if (stepNum != -1 && stepNum < junqiStepNum) {
+                    junqiStepNum = stepNum;
+                    junqiStep[0] = step[0]; // å½“å‰æ£‹å­ä½ç½®
+                    junqiStep[1] = step[1];
+                    junqiStep[2] = step[2]; // ä¸‹ä¸€æ­¥ä½ç½®
+                    junqiStep[3] = step[3];
+                }
+            }
+        }
+    }
+    //std::cout<<"å†›æ——æ­¥æ•°"<<junqiStepNum<<std::endl;
+    //for(int i =0;i<4;i++){
+    // 	std::cout<<junqiStep[i]<<"  ";
+    //}
+    // è®¡ç®—æ•Œäººçš„æœ€çŸ­è·¯å¾„
+    int enemy1StepNum = INT_MAX;
+    int enemy1Step[4] = { 0, 0, -1, -1 }; // [x, y, next_x, next_y]
+    int enemy2StepNum = INT_MAX;
+    int enemy2Step[4] = { 0, 0, -1, -1 }; // [x, y, next_x, next_y]
+    if (enemyX1 != -1) {//äº”æ­¥ä¹‹å†…çš„
+        for (int i = 0; i < 12; i++) {
+            for (int j = 0; j < 5; j++) {
+                if (nowBoard[i][j] >= 1 && nowBoard[i][j] <= 10) {
+                    int stepNum = 0;
+                    int step[4]; // [x, y, next_x, next_y]
+                    aStarToTarget(i, j, enemyX1, enemyY1, nowBoard, stepNum, step);
+                    //std::cout<<stepNum<<std::endl;
+                    if (stepNum != -1 && stepNum < enemy1StepNum) {
+                        enemy1StepNum = stepNum;
+                        enemy1Step[0] = step[0]; // å½“å‰æ£‹å­ä½ç½®
+                        enemy1Step[1] = step[1];
+                        enemy1Step[2] = step[2]; // ä¸‹ä¸€æ­¥ä½ç½®
+                        enemy1Step[3] = step[3];
+                    }
+                }
+            }
+        }
+    }
+    if (enemyX2 != -1) {//äº”æ­¥ä¹‹å¤–çš„
+        for (int i = 0; i < 12; i++) {
+            for (int j = 0; j < 5; j++) {
+                if (nowBoard[i][j] >= 1 && nowBoard[i][j] <= 10) {
+                    int stepNum = 0;
+                    int step[4]; // [x, y, next_x, next_y]
+                    aStarToTarget(i, j, enemyX2, enemyY2, nowBoard, stepNum, step);
+                    //std::cout<<stepNum<<std::endl;
+                    if (stepNum != -1 && stepNum < enemy2StepNum) {
+                        enemy2StepNum = stepNum;
+                        enemy2Step[0] = step[0]; // å½“å‰æ£‹å­ä½ç½®
+                        enemy2Step[1] = step[1];
+                        enemy2Step[2] = step[2]; // ä¸‹ä¸€æ­¥ä½ç½®
+                        enemy2Step[3] = step[3];
+                    }
+                }
+            }
+        }
+    }
+    int zhaDanX = -1, zhaDanY = -1;
+    for (int i = 0; i < 6; i++) {
+        for (int j = 0; j < 5; j++) {
+            if (nowBoard[i][j] == 10) {
+                zhaDanX = i;
+                zhaDanY = j;
+            }
+        }
+    }
+
+    // std::cout<<"æ€æ•Œæ­¥æ•°"<<enemyStepNum<<std::endl;
+    //for(int i =0;i<4;i++){
+    //	std::cout<<enemyStep[i]<<"  ";
+    //ä»¥ä¸‹ç•™ç©ºå°±ä¸ºåœ¨ä»€ä¹ˆæ¡ä»¶ä¸‹è¿›è¡Œä»€ä¹ˆæ“ä½œï¼Œæœ€çŸ­è·¯å¾„ä»¥åŠç¬¬ä¸€æ­¥å·²ç®—å‡ºå¦‚ä¸Šï¼Œå†™å®Œåè¯·åˆ æ‰è¯¥è¡Œæ³¨é‡Šï¼Œè®°ä½ç»“æœä¸ºresultå››æ­¥
+    //resultæ•°ç»„ï¼Œåˆå§‹ä¸ºå››ä¸ª-1ï¼Œç¿»æ£‹å­å°†å‰ä¿©ä¸ªè®¾ä¸ºå¯¹åº”å€¼ï¼Œç§»åŠ¨è®¾ç½®å››ä¸ªå¯¹åº”å€¼ï¼Œå®åœ¨æ— æ³•ç§»åŠ¨ä¸èµ‹å€¼ç”µè„‘æ— æ³•ç§»åŠ¨
+    int AIhighestLevel = 0;
+    int peoplehighestLevel = 0;
+    for (int i = 0; i<12; i++){
+        for (int j = 0; j<5; j++){
+            if (nowBoard[i][j] > 13 && nowBoard[i][j]<23 && nowBoard[i][j] - 13 > peoplehighestLevel){
+                peoplehighestLevel = nowBoard[i][j] - 13;
+            }
+            if (nowBoard[i][j] > 0 && nowBoard[i][j]<11 && nowBoard[i][j] > AIhighestLevel){
+                AIhighestLevel = nowBoard[i][j];
+            }
+        }
+    }
 
 
 
-	if (abs(0 - enemyX1) + abs(3 - enemyY1) < 6 )//5²½ÒÔÄÚµĞ·½×î´óÆå×Ó
-	{
-		if (junqiStepNum < 3)//Èç¹û¾üÆì²½ÊıĞ¡ÓÚµÈÓÚ2
-		{
-			for (int i = 0; i<4; i++){//É±¾üÆì
-				finalStep[i] = junqiStep[i];
-			}
-			std::string result = "";
-			for (int i = 0; i <4; i++){
-				result = result + std::to_string(finalStep[i]) + ",";
-			}
-			return result;
-		}
-		if (enemy1StepNum  <  3) //Èç¹ûÕâ¸öÆå×Ó¡¶=2 
-		{
-			for (int i = 0; i<4; i++){//É±¸ÃÆå×Ó
-				finalStep[i] = enemy1Step[i];
-			}
-			if (finalStep[0] != -1)
-			{
-				std::string result = "";
-				for (int i = 0; i <4; i++){
-					result = result + std::to_string(finalStep[i]) + ",";
-				}
-				return result;
-			}
-			
-		}
-		if (finalStep[0] == -1)//·­ÆåÂß¼­
-		{
-			int latestx = -1, latesty = -1, distance = 100;
-			for (int i = 0; i<6; i++){
-				for (int j = 0; j<5; j++){
-					if (nowBoard[i][j] == 0){
-						if ((11 - i + abs(j - 1))<distance){
-							distance = 11 - i + abs(j - 1);
-							latestx = i;
-							latesty = j;
-						}
-					}
-				}
-			}
-			if (latestx != -1){//ÄÜ·­
-				finalStep[0] = latestx;
-				finalStep[1] = latesty;
-			}
-			else{//Ã»·­µÄ±¨´í
-				finalStep[0] = -1;
-				finalStep[1] = -1;
-			}
-		}
-	}
+    if (abs(0 - enemyX1) + abs(3 - enemyY1) < 6 )//5æ­¥ä»¥å†…æ•Œæ–¹æœ€å¤§æ£‹å­
+    {
+        if (junqiStepNum < 3)//å¦‚æœå†›æ——æ­¥æ•°å°äºç­‰äº2
+        {
+            for (int i = 0; i<4; i++){//æ€å†›æ——
+                finalStep[i] = junqiStep[i];
+            }
+            std::string result = "";
+            for (int i = 0; i <4; i++){
+                result = result + std::to_string(finalStep[i]) + ",";
+            }
+            return result;
+        }
+        if (enemy1StepNum  <  3) //å¦‚æœè¿™ä¸ªæ£‹å­ã€Š=2
+        {
+            for (int i = 0; i<4; i++){//æ€è¯¥æ£‹å­
+                finalStep[i] = enemy1Step[i];
+            }
+            if (finalStep[0] != -1)
+            {
+                std::string result = "";
+                for (int i = 0; i <4; i++){
+                    result = result + std::to_string(finalStep[i]) + ",";
+                }
+                return result;
+            }
 
-	if (abs(0 - enemyX1) + abs(3 - enemyY1) > 5)//5²½ÒÔÄÚ²»´æÔÚ
-	{
-		if (enemy2StepNum < 4) //É±¸ÃÆå×Ó3²½¼°ÒÔÏÂ
-		{
-			if (junqiStepNum < enemy2StepNum)
-			{
-				for (int i = 0; i<4; i++){//É±¾üÆì
-					finalStep[i] = junqiStep[i];
-				}
-				std::string result = "";
-				for (int i = 0; i <4; i++){
-					result = result + std::to_string(finalStep[i]) + ",";
-				}
-				return result;
-			}
-			else
-			{
-				for (int i = 0; i<4; i++){//É±¸ÃÆå×Ó
-					finalStep[i] = enemy1Step[i];
-				}
-				std::string result = "";
-				for (int i = 0; i <4; i++){
-					result = result + std::to_string(finalStep[i]) + ",";
-				}
-				return result;
-			}
-		}
-		if (enemy2StepNum > 3)//4²½¼°ÒÔÉÏ
-		{
-			if (highestLevel2 > 19)//ÂÃ³¤ÒÔÉÏ
-			{
-				if (highestLevel2 > 20)//¾ü³¤ÒÔÉÏ
-				{
-					if (junqiStepNum < 3)//É±¾üÆìĞ¡ÓÚµÈÓÚ2
-					{
-						for (int i = 0; i<4; i++){//É±¾üÆì
-							finalStep[i] = junqiStep[i];
-						}
-						std::string result = "";
-						for (int i = 0; i <4; i++){
-							result = result + std::to_string(finalStep[i]) + ",";
-						}
-						return result;
-					}
-					else
-					{
-						for (int i = 0; i<4; i++){//É±¸ÃÆå×Ó
-							finalStep[i] = enemy2Step[i];
-						}
-						std::string result = "";
-						for (int i = 0; i <4; i++){
-							result = result + std::to_string(finalStep[i]) + ",";
-						}
-						return result;
-					}
-				}
-				if (finalStep[0] == -1)//¼È²»É±¾üÆì£¬É±¾ü³¤¼°ÒÔÉÏÒ²ÎŞÂ·¾¶
-				{
-					int mx = -1, my = -1,ml = -1;
-					for (int i = -1; i < 2; i++)
-					{
-						for (int j = -1; j < 2; j++)
-						{
-							if ((enemyX2 + i) >= 0 && (enemyX2 + i) <= 11)
-							{
-								if ((enemyY2 + j) >= 0 && (enemyY2 + j) <= 4)
-								{
-									if (willBeEatOneStep(enemyX2 + i, enemyY2 + j, nowBoard, nowBoard[enemyX2 + i][enemyY2 + j]))
-									{
-										if (nowBoard[enemyX2 + i][enemyY2 + j] > ml)
-										{
-											ml = nowBoard[enemyX2 + i][enemyY2 + j];
-											mx = enemyX2 + i;
-											my = enemyY2 + j;
-										}
-									}
-								}
-							}
-						}
-					}
-					if (ml != -1)
-					{
-						bool a[5];
-						a[0] = isValidMove(2, 1, nowBoard, ml, mx, my);
-						a[1] = isValidMove(2, 3, nowBoard, ml, mx, my);
-						a[2] = isValidMove(3, 2, nowBoard, ml, mx, my);
-						a[3] = isValidMove(4, 1, nowBoard, ml, mx, my);
-						a[4] = isValidMove(4, 3, nowBoard, ml, mx, my);
-						int retxingyingmove = 0, xyi = -1;
-						for (xyi; xyi < 5; xyi++)
-						{
-							retxingyingmove = retxingyingmove + a[xyi];
-							if (retxingyingmove > 0)
-							{
-								break;
-							}
-						}
-						int stepNum = 1;
-						int step[4]; // [x, y, next_x, next_y]
-						if (xyi == 0)
-						{
-							finalStep[2] = 2, finalStep[3] = 1;
-						}
-						else if (xyi == 1)
-						{
-							finalStep[2] = 2, finalStep[3] = 3;
-						}
-						else if (xyi == 2)
-						{
-							finalStep[2] = 3, finalStep[3] = 2;
-						}
-						else if (xyi == 3)
-						{
-							finalStep[2] = 4, finalStep[3] = 1;
-						}
-						else if (xyi == 4)
-						{
-							finalStep[2] = 4, finalStep[3] = 3;
-						}
-						if (finalStep[2] != -1)
-						{
-							finalStep[0] = mx;
-							finalStep[1] = my;
-							std::string result = "";
-							for (int i = 0; i < 4; i++){
-								result = result + std::to_string(finalStep[i]) + ",";
-							}
-							return result;
-						}
-					}
+        }
+        if (finalStep[0] == -1)//ç¿»æ£‹é€»è¾‘
+        {
+            int latestx = -1, latesty = -1, distance = 100;
+            for (int i = 0; i<6; i++){
+                for (int j = 0; j<5; j++){
+                    if (nowBoard[i][j] == 0){
+                        if ((11 - i + abs(j - 1))<distance){
+                            distance = 11 - i + abs(j - 1);
+                            latestx = i;
+                            latesty = j;
+                        }
+                    }
+                }
+            }
+            if (latestx != -1){//èƒ½ç¿»
+                finalStep[0] = latestx;
+                finalStep[1] = latesty;
+            }
+            else{//æ²¡ç¿»çš„æŠ¥é”™
+                finalStep[0] = -1;
+                finalStep[1] = -1;
+            }
+        }
+    }
 
-
-				}
-				if (finalStep[0] == -1)//¼È²»É±¾üÆì£¬É±¾ü³¤¼°ÒÔÉÏÒ²ÎŞÂ·¾¶£¬Ò²²»ÄÜÈÃÆå×Ó½øĞĞÓª¹æ±Ü
-				{
-					int latestx = -1, latesty = -1, distance = 100;
-					if (junqiStep[2] != -1){
-						for (int i = 0; i<4; i++){
-							finalStep[i] = junqiStep[i];
-						}
-					}
-					else{//Ã»ÓĞÆå×ÓÄÜ×ßÁËÒ²·­
-						for (int i = 0; i<6; i++){
-							for (int j = 0; j<5; j++){
-								if (nowBoard[i][j] == 0){
-									if ((11 - i + abs(j - 1))<distance){
-										distance = 11 - i + abs(j - 1);
-										latestx = i;
-										latesty = j;
-									}
-								}
-							}
-						}
-						if (latestx != -1){//ÄÜ·­
-							finalStep[0] = latestx;
-							finalStep[1] = latesty;
-						}
-						else{//Ã»·­µÄ±¨´í
-							finalStep[0] = -1;
-							finalStep[1] = -1;
-						}
-					}
-				}
-			}
-			
-			if (highestLevel2 < 20)//ÂÃ³¤¼°ÒÔÏÂ
-			{
-				if (junqiStepNum < 2)//É±¾üÆìĞ¡ÓÚ2
-				{
-					for (int i = 0; i<4; i++){//É±¾üÆì
-						finalStep[i] = junqiStep[i];
-					}
-					std::string result = "";
-					for (int i = 0; i <4; i++){
-						result = result + std::to_string(finalStep[i]) + ",";
-					}
-					return result;
-				}
-				if (zhaDanX != -1)//Èç¹ûÓĞÕ¨µ¯
-				{
-					//Õ¨µ¯½øĞĞÓª
-				}
-				if (finalStep[0] == -1)//¼È²»É±¾üÆì£¬Ò²Ã»ÓĞÕ¨µ¯½øĞĞÓª
-				{
-					for (int i = 0; i<4; i++){//É±¾üÆì
-						finalStep[i] = junqiStep[i];
-					}
-					std::string result = "";
-					for (int i = 0; i <4; i++){
-						result = result + std::to_string(finalStep[i]) + ",";
-					}
-					return result;
-				}
-			}
-		}
-	}
-
-	if (peoplehighestLevel>AIhighestLevel)//Íæ¼Ò×î¸ßµÈ¼¶¸ßÓÚAI
-	{
-		if (junqiStepNum < 3)//É±¾üÆìĞ¡ÓÚµÈÓÚ2
-		{
-			for (int i = 0; i < 4; i++){//É±¾üÆì
-				finalStep[i] = junqiStep[i];
-			}
-			std::string result = "";
-			for (int i = 0; i < 4; i++){
-				result = result + std::to_string(finalStep[i]) + ",";
-			}
-			return result;
-		}
-		if (finalStep[0] == -1)//²»É±¾üÆì
-		{
-			//ÕÒµ½×î´óµÄ
-			int mx, my = -1,ml = -1;
-			for (int i = 0; i < 11; i++)
-			{
-				for (int j = 0; j < 5; j++)
-				{
-					if (nowBoard[i][j] >= ml && nowBoard[i][j] <= 12 && ml >= 5)
-					{
-						ml = nowBoard[i][j];
-						mx = i;
-						my = j;
-					}
-				}	
-			}
-			if (ml != -1)
-			{
-				bool a[5];
-				a[0] = isValidMove(7, 1, nowBoard, ml, mx, my);
-				a[1] = isValidMove(7, 3, nowBoard, ml, mx, my);
-				a[2] = isValidMove(8, 2, nowBoard, ml, mx, my);
-				a[3] = isValidMove(9, 1, nowBoard, ml, mx, my);
-				a[4] = isValidMove(9, 3, nowBoard, ml, mx, my);
-				int retxingyingmove = 0, xyi = -1;
-				for (xyi; xyi < 5; xyi++)
-				{
-					retxingyingmove = retxingyingmove + a[xyi];
-					if (retxingyingmove > 0)
-					{
-						break;
-					}
-				}
-				int stepNum = 1;
-				int step[4]; // [x, y, next_x, next_y]
-				if (xyi == 0)
-				{
-					finalStep[2] = 7, finalStep[3] = 1;
-				}
-				else if (xyi == 1)
-				{
-					finalStep[2] = 7, finalStep[3] = 3;
-				}
-				else if (xyi == 2)
-				{
-					finalStep[2] = 8, finalStep[3] = 2;
-				}
-				else if (xyi == 3)
-				{
-					finalStep[2] = 9, finalStep[3] = 1;
-				}
-				else if (xyi == 4)
-				{
-					finalStep[2] = 9, finalStep[3] = 3;
-				}
-				if (finalStep[2] != -1)
-				{
-					finalStep[0] = mx;
-					finalStep[1] = my;
-					std::string result = "";
-					for (int i = 0; i < 4; i++){
-						result = result + std::to_string(finalStep[i]) + ",";
-					}
-					return result;
-				}
-			}
-			
+    if (abs(0 - enemyX1) + abs(3 - enemyY1) > 5)//5æ­¥ä»¥å†…ä¸å­˜åœ¨
+    {
+        if (enemy2StepNum < 4) //æ€è¯¥æ£‹å­3æ­¥åŠä»¥ä¸‹
+        {
+            if (junqiStepNum < enemy2StepNum)
+            {
+                for (int i = 0; i<4; i++){//æ€å†›æ——
+                    finalStep[i] = junqiStep[i];
+                }
+                std::string result = "";
+                for (int i = 0; i <4; i++){
+                    result = result + std::to_string(finalStep[i]) + ",";
+                }
+                return result;
+            }
+            else
+            {
+                for (int i = 0; i<4; i++){//æ€è¯¥æ£‹å­
+                    finalStep[i] = enemy1Step[i];
+                }
+                std::string result = "";
+                for (int i = 0; i <4; i++){
+                    result = result + std::to_string(finalStep[i]) + ",";
+                }
+                return result;
+            }
+        }
+        if (enemy2StepNum > 3)//4æ­¥åŠä»¥ä¸Š
+        {
+            if (highestLevel2 > 19)//æ—…é•¿ä»¥ä¸Š
+            {
+                if (highestLevel2 > 20)//å†›é•¿ä»¥ä¸Š
+                {
+                    if (junqiStepNum < 3)//æ€å†›æ——å°äºç­‰äº2
+                    {
+                        for (int i = 0; i<4; i++){//æ€å†›æ——
+                            finalStep[i] = junqiStep[i];
+                        }
+                        std::string result = "";
+                        for (int i = 0; i <4; i++){
+                            result = result + std::to_string(finalStep[i]) + ",";
+                        }
+                        return result;
+                    }
+                    else
+                    {
+                        for (int i = 0; i<4; i++){//æ€è¯¥æ£‹å­
+                            finalStep[i] = enemy2Step[i];
+                        }
+                        std::string result = "";
+                        for (int i = 0; i <4; i++){
+                            result = result + std::to_string(finalStep[i]) + ",";
+                        }
+                        return result;
+                    }
+                }
+                if (finalStep[0] == -1)//æ—¢ä¸æ€å†›æ——ï¼Œæ€å†›é•¿åŠä»¥ä¸Šä¹Ÿæ— è·¯å¾„
+                {
+                    int mx = -1, my = -1,ml = -1;
+                    for (int i = -1; i < 2; i++)
+                    {
+                        for (int j = -1; j < 2; j++)
+                        {
+                            if ((enemyX2 + i) >= 0 && (enemyX2 + i) <= 11)
+                            {
+                                if ((enemyY2 + j) >= 0 && (enemyY2 + j) <= 4)
+                                {
+                                    if (willBeEatOneStep(enemyX2 + i, enemyY2 + j, nowBoard, nowBoard[enemyX2 + i][enemyY2 + j]))
+                                    {
+                                        if (nowBoard[enemyX2 + i][enemyY2 + j] > ml)
+                                        {
+                                            ml = nowBoard[enemyX2 + i][enemyY2 + j];
+                                            mx = enemyX2 + i;
+                                            my = enemyY2 + j;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (ml != -1)
+                    {
+                        bool a[5];
+                        a[0] = isValidMove(2, 1, nowBoard, ml, mx, my);
+                        a[1] = isValidMove(2, 3, nowBoard, ml, mx, my);
+                        a[2] = isValidMove(3, 2, nowBoard, ml, mx, my);
+                        a[3] = isValidMove(4, 1, nowBoard, ml, mx, my);
+                        a[4] = isValidMove(4, 3, nowBoard, ml, mx, my);
+                        int retxingyingmove = 0, xyi = -1;
+                        for (xyi; xyi < 5; xyi++)
+                        {
+                            retxingyingmove = retxingyingmove + a[xyi];
+                            if (retxingyingmove > 0)
+                            {
+                                break;
+                            }
+                        }
+                        int stepNum = 1;
+                        int step[4]; // [x, y, next_x, next_y]
+                        if (xyi == 0)
+                        {
+                            finalStep[2] = 2, finalStep[3] = 1;
+                        }
+                        else if (xyi == 1)
+                        {
+                            finalStep[2] = 2, finalStep[3] = 3;
+                        }
+                        else if (xyi == 2)
+                        {
+                            finalStep[2] = 3, finalStep[3] = 2;
+                        }
+                        else if (xyi == 3)
+                        {
+                            finalStep[2] = 4, finalStep[3] = 1;
+                        }
+                        else if (xyi == 4)
+                        {
+                            finalStep[2] = 4, finalStep[3] = 3;
+                        }
+                        if (finalStep[2] != -1)
+                        {
+                            finalStep[0] = mx;
+                            finalStep[1] = my;
+                            std::string result = "";
+                            for (int i = 0; i < 4; i++){
+                                result = result + std::to_string(finalStep[i]) + ",";
+                            }
+                            return result;
+                        }
+                    }
 
 
+                }
+                if (finalStep[0] == -1)//æ—¢ä¸æ€å†›æ——ï¼Œæ€å†›é•¿åŠä»¥ä¸Šä¹Ÿæ— è·¯å¾„ï¼Œä¹Ÿä¸èƒ½è®©æ£‹å­è¿›è¡Œè¥è§„é¿
+                {
+                    int latestx = -1, latesty = -1, distance = 100;
+                    if (junqiStep[2] != -1){
+                        for (int i = 0; i<4; i++){
+                            finalStep[i] = junqiStep[i];
+                        }
+                    }
+                    else{//æ²¡æœ‰æ£‹å­èƒ½èµ°äº†ä¹Ÿç¿»
+                        for (int i = 0; i<6; i++){
+                            for (int j = 0; j<5; j++){
+                                if (nowBoard[i][j] == 0){
+                                    if ((11 - i + abs(j - 1))<distance){
+                                        distance = 11 - i + abs(j - 1);
+                                        latestx = i;
+                                        latesty = j;
+                                    }
+                                }
+                            }
+                        }
+                        if (latestx != -1){//èƒ½ç¿»
+                            finalStep[0] = latestx;
+                            finalStep[1] = latesty;
+                        }
+                        else{//æ²¡ç¿»çš„æŠ¥é”™
+                            finalStep[0] = -1;
+                            finalStep[1] = -1;
+                        }
+                    }
+                }
+            }
 
-		}
+            if (highestLevel2 < 20)//æ—…é•¿åŠä»¥ä¸‹
+            {
+                if (junqiStepNum < 2)//æ€å†›æ——å°äº2
+                {
+                    for (int i = 0; i<4; i++){//æ€å†›æ——
+                        finalStep[i] = junqiStep[i];
+                    }
+                    std::string result = "";
+                    for (int i = 0; i <4; i++){
+                        result = result + std::to_string(finalStep[i]) + ",";
+                    }
+                    return result;
+                }
+                if (zhaDanX != -1)//å¦‚æœæœ‰ç‚¸å¼¹
+                {
+                    //ç‚¸å¼¹è¿›è¡Œè¥
+                }
+                if (finalStep[0] == -1)//æ—¢ä¸æ€å†›æ——ï¼Œä¹Ÿæ²¡æœ‰ç‚¸å¼¹è¿›è¡Œè¥
+                {
+                    for (int i = 0; i<4; i++){//æ€å†›æ——
+                        finalStep[i] = junqiStep[i];
+                    }
+                    std::string result = "";
+                    for (int i = 0; i <4; i++){
+                        result = result + std::to_string(finalStep[i]) + ",";
+                    }
+                    return result;
+                }
+            }
+        }
+    }
 
-		if (finalStep[0] == -1)//²»É±¾üÆì£¬²»±£»¤aiÔÚÈËÀàÆåÅÌ×î´óµÄÆå×Ó
-		{
-			int latestx = -1, latesty = -1, distance = 100;
-			if (junqiStep[2] != -1){
-				for (int i = 0; i<4; i++){
-					finalStep[i] = junqiStep[i];
-				}
-			}
-			else{//Ã»ÓĞÆå×ÓÄÜ×ßÁËÒ²·­
-				for (int i = 0; i<6; i++){
-					for (int j = 0; j<5; j++){
-						if (nowBoard[i][j] == 0){
-							if ((11 - i + abs(j - 1))<distance){
-								distance = 11 - i + abs(j - 1);
-								latestx = i;
-								latesty = j;
-							}
-						}
-					}
-				}
-				if (latestx != -1){//ÄÜ·­
-					finalStep[0] = latestx;
-					finalStep[1] = latesty;
-				}
-				else{//Ã»·­µÄ±¨´í
-					finalStep[0] = -1;
-					finalStep[1] = -1;
-				}
-			}
-		}
-	}
-	else//Ğ¡ÓÚµÈÓÚ
-	{
-		int latestx = -1, latesty = -1,distance = 100;
-		if (junqiStep[2] != -1){
-			for (int i = 0; i<4; i++){
-				finalStep[i] = junqiStep[i];
-			}
-		}
-		else{//Ã»ÓĞÆå×ÓÄÜ×ßÁËÒ²·­
-			for (int i = 0; i<6; i++){
-				for (int j = 0; j<5; j++){
-					if (nowBoard[i][j] == 0){
-						if ((11 - i + abs(j - 1))<distance){
-							distance = 11 - i + abs(j - 1);
-							latestx = i;
-							latesty = j;
-						}
-					}
-				}
-			}
-			if (latestx != -1){//ÄÜ·­
-				finalStep[0] = latestx;
-				finalStep[1] = latesty;
-			}
-			else{//Ã»·­µÄ±¨´í
-				finalStep[0] = -1;
-				finalStep[1] = -1;
-			}
-		}
-	}
+    if (peoplehighestLevel>AIhighestLevel)//ç©å®¶æœ€é«˜ç­‰çº§é«˜äºAI
+    {
+        if (junqiStepNum < 3)//æ€å†›æ——å°äºç­‰äº2
+        {
+            for (int i = 0; i < 4; i++){//æ€å†›æ——
+                finalStep[i] = junqiStep[i];
+            }
+            std::string result = "";
+            for (int i = 0; i < 4; i++){
+                result = result + std::to_string(finalStep[i]) + ",";
+            }
+            return result;
+        }
+        if (finalStep[0] == -1)//ä¸æ€å†›æ——
+        {
+            //æ‰¾åˆ°æœ€å¤§çš„
+            int mx, my = -1,ml = -1;
+            for (int i = 0; i < 11; i++)
+            {
+                for (int j = 0; j < 5; j++)
+                {
+                    if (nowBoard[i][j] >= ml && nowBoard[i][j] <= 12 && ml >= 5)
+                    {
+                        ml = nowBoard[i][j];
+                        mx = i;
+                        my = j;
+                    }
+                }
+            }
+            if (ml != -1)
+            {
+                bool a[5];
+                a[0] = isValidMove(7, 1, nowBoard, ml, mx, my);
+                a[1] = isValidMove(7, 3, nowBoard, ml, mx, my);
+                a[2] = isValidMove(8, 2, nowBoard, ml, mx, my);
+                a[3] = isValidMove(9, 1, nowBoard, ml, mx, my);
+                a[4] = isValidMove(9, 3, nowBoard, ml, mx, my);
+                int retxingyingmove = 0, xyi = -1;
+                for (xyi; xyi < 5; xyi++)
+                {
+                    retxingyingmove = retxingyingmove + a[xyi];
+                    if (retxingyingmove > 0)
+                    {
+                        break;
+                    }
+                }
+                int stepNum = 1;
+                int step[4]; // [x, y, next_x, next_y]
+                if (xyi == 0)
+                {
+                    finalStep[2] = 7, finalStep[3] = 1;
+                }
+                else if (xyi == 1)
+                {
+                    finalStep[2] = 7, finalStep[3] = 3;
+                }
+                else if (xyi == 2)
+                {
+                    finalStep[2] = 8, finalStep[3] = 2;
+                }
+                else if (xyi == 3)
+                {
+                    finalStep[2] = 9, finalStep[3] = 1;
+                }
+                else if (xyi == 4)
+                {
+                    finalStep[2] = 9, finalStep[3] = 3;
+                }
+                if (finalStep[2] != -1)
+                {
+                    finalStep[0] = mx;
+                    finalStep[1] = my;
+                    std::string result = "";
+                    for (int i = 0; i < 4; i++){
+                        result = result + std::to_string(finalStep[i]) + ",";
+                    }
+                    return result;
+                }
+            }
 
 
 
 
+        }
 
+        if (finalStep[0] == -1)//ä¸æ€å†›æ——ï¼Œä¸ä¿æŠ¤aiåœ¨äººç±»æ£‹ç›˜æœ€å¤§çš„æ£‹å­
+        {
+            int latestx = -1, latesty = -1, distance = 100;
+            if (junqiStep[2] != -1){
+                for (int i = 0; i<4; i++){
+                    finalStep[i] = junqiStep[i];
+                }
+            }
+            else{//æ²¡æœ‰æ£‹å­èƒ½èµ°äº†ä¹Ÿç¿»
+                for (int i = 0; i<6; i++){
+                    for (int j = 0; j<5; j++){
+                        if (nowBoard[i][j] == 0){
+                            if ((11 - i + abs(j - 1))<distance){
+                                distance = 11 - i + abs(j - 1);
+                                latestx = i;
+                                latesty = j;
+                            }
+                        }
+                    }
+                }
+                if (latestx != -1){//èƒ½ç¿»
+                    finalStep[0] = latestx;
+                    finalStep[1] = latesty;
+                }
+                else{//æ²¡ç¿»çš„æŠ¥é”™
+                    finalStep[0] = -1;
+                    finalStep[1] = -1;
+                }
+            }
+        }
+    }
+    else//å°äºç­‰äº
+    {
+        int latestx = -1, latesty = -1,distance = 100;
+        if (junqiStep[2] != -1){
+            for (int i = 0; i<4; i++){
+                finalStep[i] = junqiStep[i];
+            }
+        }
+        else{//æ²¡æœ‰æ£‹å­èƒ½èµ°äº†ä¹Ÿç¿»
+            for (int i = 0; i<6; i++){
+                for (int j = 0; j<5; j++){
+                    if (nowBoard[i][j] == 0){
+                        if ((11 - i + abs(j - 1))<distance){
+                            distance = 11 - i + abs(j - 1);
+                            latestx = i;
+                            latesty = j;
+                        }
+                    }
+                }
+            }
+            if (latestx != -1){//èƒ½ç¿»
+                finalStep[0] = latestx;
+                finalStep[1] = latesty;
+            }
+            else{//æ²¡ç¿»çš„æŠ¥é”™
+                finalStep[0] = -1;
+                finalStep[1] = -1;
+            }
+        }
+    }
+    std::string result = "";
+    for(int i = 0; i <4 ;i++){
+        result = result + std::to_string(finalStep[i])+",";
+    }
+    return result;
 
-
-
-
-
-
-	
 }
 
 
 struct Node {
-	int x, y;
-	int g;  // ´ÓÆğµãµ½µ±Ç°½ÚµãµÄÊµ¼Ê´ú¼Û
-	int h;  // Æô·¢Ê½¹À¼Æ£¬´Óµ±Ç°½Úµãµ½Ä¿±ê½ÚµãµÄ´ú¼Û
-	int f;  // f = g + h£¬×Ü´ú¼Û
-	std::pair<int, int> prev;  // ¼ÇÂ¼Ç°Çı½Úµã
+    int x, y;
+    int g;  // ä»èµ·ç‚¹åˆ°å½“å‰èŠ‚ç‚¹çš„å®é™…ä»£ä»·
+    int h;  // å¯å‘å¼ä¼°è®¡ï¼Œä»å½“å‰èŠ‚ç‚¹åˆ°ç›®æ ‡èŠ‚ç‚¹çš„ä»£ä»·
+    int f;  // f = g + hï¼Œæ€»ä»£ä»·
+    std::pair<int, int> prev;  // è®°å½•å‰é©±èŠ‚ç‚¹
 
-	bool operator>(const Node& other) const {
-		return f > other.f;  // ÓÅÏÈ¶ÓÁĞ°´ f ÖµÉıĞòÅÅÁĞ
-	}
+    bool operator>(const Node& other) const {
+        return f > other.f;  // ä¼˜å…ˆé˜Ÿåˆ—æŒ‰ f å€¼å‡åºæ’åˆ—
+    }
 };
 
 void DifficultAI::aStarToTarget(int startX, int startY, int targetX, int targetY, int nowBoard[12][5], int& stepNum, int step[4]) {
-	// °Ë¸ö·½Ïò
-	int directions[8][2] = { { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 }, { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 } };
-	// ÊÇ·ñ·ÃÎÊ
-	bool visited[12][5];
-	memset(visited, false, sizeof(visited));
-	// ¼ÇÂ¼Ç°Çı½Úµã
-	std::pair<int, int> prev[12][5];
-	memset(prev, -1, sizeof(prev));  // -1±íÊ¾Ã»ÓĞÇ°Çı½Úµã
-	// ÓÅÏÈ¶ÓÁĞ£¬°´ f Öµ´ÓĞ¡µ½´óÅÅÁĞ
-	std::priority_queue<Node, std::vector<Node>, std::greater<Node>> pq;
-	// A*Ëã·¨¿ªÊ¼
-	Node startNode = { startX, startY, 0, 0, 0, { -1, -1 } };
-	pq.push(startNode);
-	visited[startX][startY] = true;
-	// Æô·¢Ê½º¯Êı£ºÂü¹ş¶Ù¾àÀë
-	auto heuristic = [&](int x, int y) {
-		return std::abs(x - targetX) + std::abs(y - targetY);
-	};
-	bool found = false;
-	while (!pq.empty()) {
-		Node current = pq.top();
-		pq.pop();
+    // å…«ä¸ªæ–¹å‘
+    int directions[8][2] = { { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 }, { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 } };
+    // æ˜¯å¦è®¿é—®
+    bool visited[12][5];
+    memset(visited, false, sizeof(visited));
+    // è®°å½•å‰é©±èŠ‚ç‚¹
+    std::pair<int, int> prev[12][5];
+    memset(prev, -1, sizeof(prev));  // -1è¡¨ç¤ºæ²¡æœ‰å‰é©±èŠ‚ç‚¹
+    // ä¼˜å…ˆé˜Ÿåˆ—ï¼ŒæŒ‰ f å€¼ä»å°åˆ°å¤§æ’åˆ—
+    std::priority_queue<Node, std::vector<Node>, std::greater<Node>> pq;
+    // A*ç®—æ³•å¼€å§‹
+    Node startNode = { startX, startY, 0, 0, 0, { -1, -1 } };
+    pq.push(startNode);
+    visited[startX][startY] = true;
+    // å¯å‘å¼å‡½æ•°ï¼šæ›¼å“ˆé¡¿è·ç¦»
+    auto heuristic = [&](int x, int y) {
+        return std::abs(x - targetX) + std::abs(y - targetY);
+    };
+    bool found = false;
+    while (!pq.empty()) {
+        Node current = pq.top();
+        pq.pop();
 
-		int x = current.x;
-		int y = current.y;
+        int x = current.x;
+        int y = current.y;
 
-		// Èç¹ûÕÒµ½Ä¿±ê£¬Í£Ö¹ËÑË÷
-		if (x == targetX && y == targetY) {
-			found = true;
-			stepNum = current.g;
-			break;
-		}
-		// ±éÀúµ±Ç°½ÚµãµÄ°Ë¸ö·½Ïò
-		for (int i = 0; i < 8; i++) {
-			int nx = x + directions[i][0];
-			int ny = y + directions[i][1];
+        // å¦‚æœæ‰¾åˆ°ç›®æ ‡ï¼Œåœæ­¢æœç´¢
+        if (x == targetX && y == targetY) {
+            found = true;
+            stepNum = current.g;
+            break;
+        }
+        // éå†å½“å‰èŠ‚ç‚¹çš„å…«ä¸ªæ–¹å‘
+        for (int i = 0; i < 8; i++) {
+            int nx = x + directions[i][0];
+            int ny = y + directions[i][1];
 
-			// ÅĞ¶ÏĞÂµÄÎ»ÖÃÊÇ·ñºÏ·¨ÇÒÎ´±»·ÃÎÊ¹ı
-			if (nx >= 0 && nx < 12 && ny >= 0 && ny < 5 && !visited[nx][ny] && isValidMove(nx, ny, nowBoard, nowBoard[startX][startY], x, y)) {
-				visited[nx][ny] = true;
-				int g = current.g + 1;  // Êµ¼Ê´ú¼Û£º²½ÊıÔö¼Ó
-				if (g == 1){
-					if (willBeEatOneStep(nx, ny, nowBoard, nowBoard[startX][startY])){//µÚÒ»²½»á²»»á±»³Ô 
-						if (nowBoard[startX][startY] > 18){
-							continue;
-						}
-						else{
-							if (nowBoard[nx][ny] == 13 || nowBoard[nx][ny] == 26){
-								continue;
-							}
-						}
-					}
-				}
-				int h = heuristic(nx, ny);  // Æô·¢Ê½´ú¼Û£ºÂü¹ş¶Ù¾àÀë
-				int f = g + h;  // ×Ü´ú¼Û£ºf = g + h
+            // åˆ¤æ–­æ–°çš„ä½ç½®æ˜¯å¦åˆæ³•ä¸”æœªè¢«è®¿é—®è¿‡
+            if (nx >= 0 && nx < 12 && ny >= 0 && ny < 5 && !visited[nx][ny] && isValidMove(nx, ny, nowBoard, nowBoard[startX][startY], x, y)) {
+                visited[nx][ny] = true;
+                int g = current.g + 1;  // å®é™…ä»£ä»·ï¼šæ­¥æ•°å¢åŠ 
+                if (g == 1){
+                    if (willBeEatOneStep(nx, ny, nowBoard, nowBoard[startX][startY])){//ç¬¬ä¸€æ­¥ä¼šä¸ä¼šè¢«åƒ
+                        if (nowBoard[startX][startY] > 18){
+                            continue;
+                        }
+                        else{
+                            if (nowBoard[nx][ny] == 13 || nowBoard[nx][ny] == 26){
+                                continue;
+                            }
+                        }
+                    }
+                }
+                int h = heuristic(nx, ny);  // å¯å‘å¼ä»£ä»·ï¼šæ›¼å“ˆé¡¿è·ç¦»
+                int f = g + h;  // æ€»ä»£ä»·ï¼šf = g + h
 
-				Node nextNode = { nx, ny, g, h, f, { x, y } };
-				pq.push(nextNode);
-				prev[nx][ny] = { x, y };  // ¼ÇÂ¼Ç°Çı½Úµã
-			}
-		}
-		// ¶à¸ñÌøÔ¾
-		int jumpMax = 9;  // ×î¸ßÌøÔ¾²½Êı
-		for (int i = 0; i < 4; i++) {
-			for (int jump = 2; jump <= jumpMax; jump++) {
-				int nx = x + directions[i][0] * jump;
-				int ny = y + directions[i][1] * jump;
-				// Ô½½ç¼ì²é
-				if (nx >= 0 && nx < 12 && ny >= 0 && ny < 5) {
-					// ÊÇ·ñ¿ÉÒÔÌøÔ¾ÇÒÒÆ¶¯ÓĞĞ§
-					if (isValidJumpMove(nx, ny, nowBoard, nowBoard[startX][startY], x, y) && isValidMove(nx, ny, nowBoard, nowBoard[startX][startY], x, y)) {
-						if (!visited[nx][ny]) {
-							visited[nx][ny] = true;
-							int g = current.g + 1;  // Êµ¼Ê´ú¼Û£º²½ÊıÔö¼Ó
-							if (g == 1){
-								if (willBeEatOneStep(nx, ny, nowBoard, nowBoard[startX][startY])){//µÚÒ»²½»á²»»á±»³Ô 
-									if (nowBoard[startX][startY] > 18){
-										continue;
-									}
-									else{
-										if (nowBoard[nx][ny] == 13 || nowBoard[nx][ny] == 26){
-											continue;
-										}
-									}
-								}
-							}
-							int h = heuristic(nx, ny);  // Æô·¢Ê½´ú¼Û£ºÂü¹ş¶Ù¾àÀë
-							int f = g + h;  // ×Ü´ú¼Û£ºf = g + h
-							Node nextNode = { nx, ny, g, h, f, { x, y } };
-							pq.push(nextNode);
-							prev[nx][ny] = { x, y };  // ¼ÇÂ¼Ç°Çı½Úµã
-						}
-					}
-					else {
-						break;  // Èç¹û²»ÄÜÌøÔ¾£¬Í£Ö¹ÌøÔ¾
-					}
-				}
-				else {
-					break;  // Ô½½ç£¬Í£Ö¹ÌøÔ¾
-				}
-			}
-		}
-	}
-	// Èç¹ûÕÒµ½Ä¿±ê£¬»ØËİ×î¶ÌÂ·¾¶
-	if (found) {
-		int currX = targetX;
-		int currY = targetY;
-		std::vector<std::pair<int, int>> path;
-		while (currX != startX || currY != startY) {
-			path.push_back({ currX, currY });
-			std::pair<int, int> prevNode = prev[currX][currY];
-			currX = prevNode.first;
-			currY = prevNode.second;
-		}
+                Node nextNode = { nx, ny, g, h, f, { x, y } };
+                pq.push(nextNode);
+                prev[nx][ny] = { x, y };  // è®°å½•å‰é©±èŠ‚ç‚¹
+            }
+        }
+        // å¤šæ ¼è·³è·ƒ
+        int jumpMax = 9;  // æœ€é«˜è·³è·ƒæ­¥æ•°
+        for (int i = 0; i < 4; i++) {
+            for (int jump = 2; jump <= jumpMax; jump++) {
+                int nx = x + directions[i][0] * jump;
+                int ny = y + directions[i][1] * jump;
+                // è¶Šç•Œæ£€æŸ¥
+                if (nx >= 0 && nx < 12 && ny >= 0 && ny < 5) {
+                    // æ˜¯å¦å¯ä»¥è·³è·ƒä¸”ç§»åŠ¨æœ‰æ•ˆ
+                    if (isValidJumpMove(nx, ny, nowBoard, nowBoard[startX][startY], x, y) && isValidMove(nx, ny, nowBoard, nowBoard[startX][startY], x, y)) {
+                        if (!visited[nx][ny]) {
+                            visited[nx][ny] = true;
+                            int g = current.g + 1;  // å®é™…ä»£ä»·ï¼šæ­¥æ•°å¢åŠ 
+                            if (g == 1){
+                                if (willBeEatOneStep(nx, ny, nowBoard, nowBoard[startX][startY])){//ç¬¬ä¸€æ­¥ä¼šä¸ä¼šè¢«åƒ
+                                    if (nowBoard[startX][startY] > 18){
+                                        continue;
+                                    }
+                                    else{
+                                        if (nowBoard[nx][ny] == 13 || nowBoard[nx][ny] == 26){
+                                            continue;
+                                        }
+                                    }
+                                }
+                            }
+                            int h = heuristic(nx, ny);  // å¯å‘å¼ä»£ä»·ï¼šæ›¼å“ˆé¡¿è·ç¦»
+                            int f = g + h;  // æ€»ä»£ä»·ï¼šf = g + h
+                            Node nextNode = { nx, ny, g, h, f, { x, y } };
+                            pq.push(nextNode);
+                            prev[nx][ny] = { x, y };  // è®°å½•å‰é©±èŠ‚ç‚¹
+                        }
+                    }
+                    else {
+                        break;  // å¦‚æœä¸èƒ½è·³è·ƒï¼Œåœæ­¢è·³è·ƒ
+                    }
+                }
+                else {
+                    break;  // è¶Šç•Œï¼Œåœæ­¢è·³è·ƒ
+                }
+            }
+        }
+    }
+    // å¦‚æœæ‰¾åˆ°ç›®æ ‡ï¼Œå›æº¯æœ€çŸ­è·¯å¾„
+    if (found) {
+        int currX = targetX;
+        int currY = targetY;
+        std::vector<std::pair<int, int>> path;
+        while (currX != startX || currY != startY) {
+            path.push_back({ currX, currY });
+            std::pair<int, int> prevNode = prev[currX][currY];
+            currX = prevNode.first;
+            currY = prevNode.second;
+        }
 
-		// ×î¶ÌÂ·¾¶µÄµÚÒ»²½ÊÇ´ÓÆğÊ¼Î»ÖÃµ½Â·¾¶ÉÏµÄµÚÒ»¸öÎ»ÖÃ
-		if (!path.empty()) {
-			step[2] = path.back().first;  // µÚÒ»²½µÄ x ×ø±ê
-			step[3] = path.back().second; // µÚÒ»²½µÄ y ×ø±ê
-		}
-		else {
-			stepNum = -1;  // Èç¹ûÃ»ÓĞÂ·¾¶£¬·µ»Ø -1
-		}
-	}
-	else {
-		stepNum = -1;  // Èç¹ûÕÒ²»µ½Â·¾¶£¬·µ»Ø -1
-	}
+        // æœ€çŸ­è·¯å¾„çš„ç¬¬ä¸€æ­¥æ˜¯ä»èµ·å§‹ä½ç½®åˆ°è·¯å¾„ä¸Šçš„ç¬¬ä¸€ä¸ªä½ç½®
+        if (!path.empty()) {
+            step[2] = path.back().first;  // ç¬¬ä¸€æ­¥çš„ x åæ ‡
+            step[3] = path.back().second; // ç¬¬ä¸€æ­¥çš„ y åæ ‡
+        }
+        else {
+            stepNum = -1;  // å¦‚æœæ²¡æœ‰è·¯å¾„ï¼Œè¿”å› -1
+        }
+    }
+    else {
+        stepNum = -1;  // å¦‚æœæ‰¾ä¸åˆ°è·¯å¾„ï¼Œè¿”å› -1
+    }
 }
 
-// ÏÂ¸ö¸ñ×ÓÄÜ²»ÄÜ×ß¹æÔò
+// ä¸‹ä¸ªæ ¼å­èƒ½ä¸èƒ½èµ°è§„åˆ™
 bool DifficultAI::isValidMove(int x, int y, int nowBoard[12][5], int currentLevel, int prevX, int prevY) {
-	int target = nowBoard[x][y];  // »ñÈ¡Ä¿±ê¸ñ×ÓÉÏµÄÆå×ÓÖµ
-	std::set<std::pair<int, int>> forbiddenSet = { { 2, 1 }, { 4, 1 }, { 7, 1 }, { 9, 1 }, { 3, 2 }, { 8, 2 }, { 2, 3 }, { 4, 3 }, { 7, 3 }, { 9, 3 } };
-	if (forbiddenSet.find({ x, y }) != forbiddenSet.end()){
-		if (target != 13 && target != 26){
-			return false;
-		}
-	}
-	if (target>0 && target<13){
-		return false;
-	}
-	if (target == 13 || target == 26 || target == 24 || target == 25) {
-		// ¹æÔò 3£ºĞ±×Å×ßµÄÅĞ¶Ï
-		if (abs(x - prevX) == 1 && abs(y - prevY) == 1) {
-			// Ğ±×Å×ß£ºx ºÍ y ×ø±êÍ¬Ê±·¢Éú±ä»¯
-			if (!(x >= 1 && x <= 5 && prevX >= 1 && prevX <= 5) || !(x >= 6 && x <= 10 && prevX >= 6 && prevX <= 10)) {
-				return false;
-			}
-			if ((y == 1 || y == 3) && (x == 1 || x == 3 || x == 5 || x == 6 || x == 8 || x == 10)){
-				return false;// Ğ±×Å×ßµÄÓĞĞ§ĞÔ
-			}
-			if ((prevY == 1 || prevY == 3) && (prevX == 1 || prevX == 3 || prevX == 5 || prevX == 6 || prevX == 8 || prevX == 10)){
-				return false;// Ğ±×Å×ßµÄÓĞĞ§ĞÔ
-			}
-		}
-		// ¹æÔò 4£º½»½çµØÖ»ÓĞÈıÌõÂ·ÄÜ×ß 
-		if (((x>5 && prevX <= 5) || (x <= 5 && prevX>5)) && (y == 1 || y == 3)) {
-			return false;
-		}
-	}
-	if (target == 0)
-	{
-		if (x < 6){
-			return false;
-		}
-		if (abs(x - prevX) == 1 && abs(y - prevY) == 1) {
-			// Ğ±×Å×ß£ºx ºÍ y ×ø±êÍ¬Ê±·¢Éú±ä»¯
-			if (!(x >= 1 && x <= 5 && prevX >= 1 && prevX <= 5) || !(x >= 6 && x <= 10 && prevX >= 6 && prevX <= 10)) {
-				return false;
-			}
-			if ((y == 1 || y == 3) && (x == 1 || x == 3 || x == 5 || x == 6 || x == 8 || x == 10)){
-				return false;// Ğ±×Å×ßµÄÓĞĞ§ĞÔ
-			}
-			if ((prevY == 1 || prevY == 3) && (prevX == 1 || prevX == 3 || prevX == 5 || prevX == 6 || prevX == 8 || prevX == 10)){
-				return false;// Ğ±×Å×ßµÄÓĞĞ§ĞÔ
-			}
-		}
-		// ¹æÔò 4£º½»½çµØÖ»ÓĞÈıÌõÂ·ÄÜ×ß 
-		if (((x>5 && prevX <= 5) || (x <= 5 && prevX>5)) && (y == 1 || y == 3)) {
-			return false;
-		}
-	}
-	// ¹æÔò 2£ºµ±Ç°Æå×ÓµÈ¼¶´óÓÚÄ¿±êÆå×ÓµÄµÈ¼¶£¬ÇÒÄ¿±êÆå×ÓÔÚ14-22Ö®¼ä
-	if (target >= 14 && target <= 22) {
-		if (currentLevel <= target - 13){
-			return false;
-		}
-		if (abs(x - prevX) == 1 && abs(y - prevY) == 1) {
-			// Ğ±×Å×ß£ºx ºÍ y ×ø±êÍ¬Ê±·¢Éú±ä»¯
-			if (!(x >= 1 && x <= 5 && prevX >= 1 && prevX <= 5) || !(x >= 6 && x <= 10 && prevX >= 6 && prevX <= 10)) {
-				return false;
-			}
-			if ((y == 1 || y == 3) && (x == 1 || x == 3 || x == 5 || x == 6 || x == 8 || x == 10)){
-				return false;// Ğ±×Å×ßµÄÓĞĞ§ĞÔ
-			}
-			if ((prevY == 1 || prevY == 3) && (prevX == 1 || prevX == 3 || prevX == 5 || prevX == 6 || prevX == 8 || prevX == 10)){
-				return false;// Ğ±×Å×ßµÄÓĞĞ§ĞÔ
-			}
-		}
-		// ¹æÔò 4£º½»½çµØÖ»ÓĞÈıÌõÂ·ÄÜ×ß 
-		if (((x>5 && prevX <= 5) || (x <= 5 && prevX>5)) && (y == 1 || y == 3)) {
-			return false;
-		}
-	}
-	// ¹æÔò 2£ºµ±Ç°Æå×ÓµÈ¼¶Ğ¡ÓÚµÈÓÚ6Ê±£¬Ä¿±êÎª23µÄÆå×Ó¿ÉÒÔ×ß
-	if (target == 23) {
-		if (currentLevel > 6){
-			return false;
-		}
-		if (abs(x - prevX) == 1 && abs(y - prevY) == 1) {
-			// Ğ±×Å×ß£ºx ºÍ y ×ø±êÍ¬Ê±·¢Éú±ä»¯
-			if (!(x >= 1 && x <= 5 && prevX >= 1 && prevX <= 5) || !(x >= 6 && x <= 10 && prevX >= 6 && prevX <= 10)) {
-				return false;
-			}
-			if ((y == 1 || y == 3) && (x == 1 || x == 3 || x == 5 || x == 6 || x == 8 || x == 10)){
-				return false;// Ğ±×Å×ßµÄÓĞĞ§ĞÔ
-			}
-			if ((prevY == 1 || prevY == 3) && (prevX == 1 || prevX == 3 || prevX == 5 || prevX == 6 || prevX == 8 || prevX == 10)){
-				return false;// Ğ±×Å×ßµÄÓĞĞ§ĞÔ
-			}
-		}
-		// ¹æÔò 4£º½»½çµØÖ»ÓĞÈıÌõÂ·ÄÜ×ß 
-		if (((x>5 && prevX <= 5) || (x <= 5 && prevX>5)) && (y == 1 || y == 3)) {
-			return false;
-		}
-	}
-	return true;  // Ã»ÓĞÎ¥¹æ£¬ÄÜ×ß 
+    int target = nowBoard[x][y];  // è·å–ç›®æ ‡æ ¼å­ä¸Šçš„æ£‹å­å€¼
+    std::set<std::pair<int, int>> forbiddenSet = { { 2, 1 }, { 4, 1 }, { 7, 1 }, { 9, 1 }, { 3, 2 }, { 8, 2 }, { 2, 3 }, { 4, 3 }, { 7, 3 }, { 9, 3 } };
+    if (forbiddenSet.find({ x, y }) != forbiddenSet.end()){
+        if (target != 13 && target != 26){
+            return false;
+        }
+    }
+    if (target>0 && target<13){
+        return false;
+    }
+    if (target == 13 || target == 26 || target == 24 || target == 25) {
+        // è§„åˆ™ 3ï¼šæ–œç€èµ°çš„åˆ¤æ–­
+        if (abs(x - prevX) == 1 && abs(y - prevY) == 1) {
+            // æ–œç€èµ°ï¼šx å’Œ y åæ ‡åŒæ—¶å‘ç”Ÿå˜åŒ–
+            if (!(x >= 1 && x <= 5 && prevX >= 1 && prevX <= 5) || !(x >= 6 && x <= 10 && prevX >= 6 && prevX <= 10)) {
+                return false;
+            }
+            if ((y == 1 || y == 3) && (x == 1 || x == 3 || x == 5 || x == 6 || x == 8 || x == 10)){
+                return false;// æ–œç€èµ°çš„æœ‰æ•ˆæ€§
+            }
+            if ((prevY == 1 || prevY == 3) && (prevX == 1 || prevX == 3 || prevX == 5 || prevX == 6 || prevX == 8 || prevX == 10)){
+                return false;// æ–œç€èµ°çš„æœ‰æ•ˆæ€§
+            }
+        }
+        // è§„åˆ™ 4ï¼šäº¤ç•Œåœ°åªæœ‰ä¸‰æ¡è·¯èƒ½èµ°
+        if (((x>5 && prevX <= 5) || (x <= 5 && prevX>5)) && (y == 1 || y == 3)) {
+            return false;
+        }
+    }
+    if (target == 0)
+    {
+        if (x < 6){
+            return false;
+        }
+        if (abs(x - prevX) == 1 && abs(y - prevY) == 1) {
+            // æ–œç€èµ°ï¼šx å’Œ y åæ ‡åŒæ—¶å‘ç”Ÿå˜åŒ–
+            if (!(x >= 1 && x <= 5 && prevX >= 1 && prevX <= 5) || !(x >= 6 && x <= 10 && prevX >= 6 && prevX <= 10)) {
+                return false;
+            }
+            if ((y == 1 || y == 3) && (x == 1 || x == 3 || x == 5 || x == 6 || x == 8 || x == 10)){
+                return false;// æ–œç€èµ°çš„æœ‰æ•ˆæ€§
+            }
+            if ((prevY == 1 || prevY == 3) && (prevX == 1 || prevX == 3 || prevX == 5 || prevX == 6 || prevX == 8 || prevX == 10)){
+                return false;// æ–œç€èµ°çš„æœ‰æ•ˆæ€§
+            }
+        }
+        // è§„åˆ™ 4ï¼šäº¤ç•Œåœ°åªæœ‰ä¸‰æ¡è·¯èƒ½èµ°
+        if (((x>5 && prevX <= 5) || (x <= 5 && prevX>5)) && (y == 1 || y == 3)) {
+            return false;
+        }
+    }
+    // è§„åˆ™ 2ï¼šå½“å‰æ£‹å­ç­‰çº§å¤§äºç›®æ ‡æ£‹å­çš„ç­‰çº§ï¼Œä¸”ç›®æ ‡æ£‹å­åœ¨14-22ä¹‹é—´
+    if (target >= 14 && target <= 22) {
+        if (currentLevel <= target - 13){
+            return false;
+        }
+        if (abs(x - prevX) == 1 && abs(y - prevY) == 1) {
+            // æ–œç€èµ°ï¼šx å’Œ y åæ ‡åŒæ—¶å‘ç”Ÿå˜åŒ–
+            if (!(x >= 1 && x <= 5 && prevX >= 1 && prevX <= 5) || !(x >= 6 && x <= 10 && prevX >= 6 && prevX <= 10)) {
+                return false;
+            }
+            if ((y == 1 || y == 3) && (x == 1 || x == 3 || x == 5 || x == 6 || x == 8 || x == 10)){
+                return false;// æ–œç€èµ°çš„æœ‰æ•ˆæ€§
+            }
+            if ((prevY == 1 || prevY == 3) && (prevX == 1 || prevX == 3 || prevX == 5 || prevX == 6 || prevX == 8 || prevX == 10)){
+                return false;// æ–œç€èµ°çš„æœ‰æ•ˆæ€§
+            }
+        }
+        // è§„åˆ™ 4ï¼šäº¤ç•Œåœ°åªæœ‰ä¸‰æ¡è·¯èƒ½èµ°
+        if (((x>5 && prevX <= 5) || (x <= 5 && prevX>5)) && (y == 1 || y == 3)) {
+            return false;
+        }
+    }
+    // è§„åˆ™ 2ï¼šå½“å‰æ£‹å­ç­‰çº§å°äºç­‰äº6æ—¶ï¼Œç›®æ ‡ä¸º23çš„æ£‹å­å¯ä»¥èµ°
+    if (target == 23) {
+        if (currentLevel > 6){
+            return false;
+        }
+        if (abs(x - prevX) == 1 && abs(y - prevY) == 1) {
+            // æ–œç€èµ°ï¼šx å’Œ y åæ ‡åŒæ—¶å‘ç”Ÿå˜åŒ–
+            if (!(x >= 1 && x <= 5 && prevX >= 1 && prevX <= 5) || !(x >= 6 && x <= 10 && prevX >= 6 && prevX <= 10)) {
+                return false;
+            }
+            if ((y == 1 || y == 3) && (x == 1 || x == 3 || x == 5 || x == 6 || x == 8 || x == 10)){
+                return false;// æ–œç€èµ°çš„æœ‰æ•ˆæ€§
+            }
+            if ((prevY == 1 || prevY == 3) && (prevX == 1 || prevX == 3 || prevX == 5 || prevX == 6 || prevX == 8 || prevX == 10)){
+                return false;// æ–œç€èµ°çš„æœ‰æ•ˆæ€§
+            }
+        }
+        // è§„åˆ™ 4ï¼šäº¤ç•Œåœ°åªæœ‰ä¸‰æ¡è·¯èƒ½èµ°
+        if (((x>5 && prevX <= 5) || (x <= 5 && prevX>5)) && (y == 1 || y == 3)) {
+            return false;
+        }
+    }
+    return true;  // æ²¡æœ‰è¿è§„ï¼Œèƒ½èµ°
 }
 
-// ÄÜ²»ÄÜ¶à²½×ß 
+// èƒ½ä¸èƒ½å¤šæ­¥èµ°
 bool DifficultAI::isValidJumpMove(int x, int y, int nowBoard[12][5], int currentLevel, int prevX, int prevY) {
-	// ¶ÔÓÚ x=1,5,6,10 Ê±£¬Èç¹ûÄ¿±ê x ²»±ä£¬y ÔÊĞí¿çÔ½¶à¸ö¸ñ×Ó£¬µ«ĞèÒªÈ·±£ÖĞ¼äµÄ¸ñ×ÓÊÇ 13 »ò 26
-	if (y != prevY){
-		if (x == 1 || x == 5 || x == 6 || x == 10) {
-			// ¼ì²éÊÇ·ñÔÊĞí¿çÔ½¶à¸ö¸ñ×Ó£º x²»±ä£¬ÑØ y Öá·½ÏòÒÆ¶¯
-			int startY = std::min(prevY, y);
-			int endY = std::max(prevY, y);
-			// È·±£ÖĞ¼ä¸ñ×ÓÊÇ 13 »ò 26
-			for (int i = startY + 1; i < endY; i++) {
-				if (nowBoard[x][i] != 13 && nowBoard[x][i] != 26) {
-					return false;
-				}
-			}
-			return true;
-		}
-	}
-	else{
-		// ¶ÔÓÚ y=0,2,4 Ê±£¬Èç¹ûÄ¿±ê y ²»±ä£¬x ÔÊĞí¿çÔ½¶à¸ö¸ñ×Ó£¬µ«ĞèÒªÈ·±£ÖĞ¼äµÄ¸ñ×ÓÊÇ 13 »ò 26
-		if ((y == 0 || y == 4) && (x >= 1 && x <= 10 && prevX >= 1 && prevX <= 10)) {
-			// ¼ì²éÊÇ·ñÔÊĞí¿çÔ½¶à¸ö¸ñ×Ó£ºx ²»±ä£¬ÑØ y Öá·½ÏòÒÆ¶¯
-			int startX = std::min(prevX, x);
-			int endX = std::max(prevX, x);
-			// È·±£ÖĞ¼ä¸ñ×ÓÊÇ 13 »ò 26
-			for (int i = startX + 1; i < endX; i++) {
-				if (nowBoard[i][y] != 13 && nowBoard[i][y] != 26) {
-					return false;
-				}
-			}
-			return true;
-		}
-	}
-	return false;  // Èç¹ûÃ»ÓĞ·ûºÏµÄ¹æÔò£¬·µ»Ø false
+    // å¯¹äº x=1,5,6,10 æ—¶ï¼Œå¦‚æœç›®æ ‡ x ä¸å˜ï¼Œy å…è®¸è·¨è¶Šå¤šä¸ªæ ¼å­ï¼Œä½†éœ€è¦ç¡®ä¿ä¸­é—´çš„æ ¼å­æ˜¯ 13 æˆ– 26
+    if (y != prevY){
+        if (x == 1 || x == 5 || x == 6 || x == 10) {
+            // æ£€æŸ¥æ˜¯å¦å…è®¸è·¨è¶Šå¤šä¸ªæ ¼å­ï¼š xä¸å˜ï¼Œæ²¿ y è½´æ–¹å‘ç§»åŠ¨
+            int startY = std::min(prevY, y);
+            int endY = std::max(prevY, y);
+            // ç¡®ä¿ä¸­é—´æ ¼å­æ˜¯ 13 æˆ– 26
+            for (int i = startY + 1; i < endY; i++) {
+                if (nowBoard[x][i] != 13 && nowBoard[x][i] != 26) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+    else{
+        // å¯¹äº y=0,2,4 æ—¶ï¼Œå¦‚æœç›®æ ‡ y ä¸å˜ï¼Œx å…è®¸è·¨è¶Šå¤šä¸ªæ ¼å­ï¼Œä½†éœ€è¦ç¡®ä¿ä¸­é—´çš„æ ¼å­æ˜¯ 13 æˆ– 26
+        if ((y == 0 || y == 4) && (x >= 1 && x <= 10 && prevX >= 1 && prevX <= 10)) {
+            // æ£€æŸ¥æ˜¯å¦å…è®¸è·¨è¶Šå¤šä¸ªæ ¼å­ï¼šx ä¸å˜ï¼Œæ²¿ y è½´æ–¹å‘ç§»åŠ¨
+            int startX = std::min(prevX, x);
+            int endX = std::max(prevX, x);
+            // ç¡®ä¿ä¸­é—´æ ¼å­æ˜¯ 13 æˆ– 26
+            for (int i = startX + 1; i < endX; i++) {
+                if (nowBoard[i][y] != 13 && nowBoard[i][y] != 26) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+    return false;  // å¦‚æœæ²¡æœ‰ç¬¦åˆçš„è§„åˆ™ï¼Œè¿”å› false
 }
 
 bool DifficultAI::willBeEatOneStep(int x, int y, int nowBoard[12][5], int currentLevel){
-	//Ë¼Â·ÊÇÌ½Ë÷Ò»²½Â·¾¶ÊÇ·ñ´æÔÚµÈ¼¶±ÈcurrentLevel¸ßµÄ
-	int directions[8][2] = { { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 }, { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 } };
-	std::set<std::pair<int, int>> forbiddenSet = { { 2, 1 }, { 4, 1 }, { 7, 1 }, { 9, 1 }, { 3, 2 }, { 8, 2 }, { 2, 3 }, { 4, 3 }, { 7, 3 }, { 9, 3 } };
-	if (forbiddenSet.find({ x, y }) != forbiddenSet.end()){
-		return false;
-	}
-	// ±éÀúµ±Ç°½ÚµãµÄ°Ë¸ö·½Ïò
-	for (int i = 0; i < 8; i++) {
-		int nx = x + directions[i][0];
-		int ny = y + directions[i][1];
-		// ÅĞ¶ÏµĞÈËÎ»ÖÃÊÇ·ñºÏ·¨
-		if (nx >= 0 && nx < 12 && ny >= 0 && ny < 5 && nowBoard[nx][ny]>14 && nowBoard[nx][ny] <= 23) {
-			//ÅĞ¶ÏµĞÈËÄÜ²»ÄÜÉ±µôÎÒ 
-			if (nowBoard[nx][ny] - 13>currentLevel){
-				//ÅĞ¶ÏµĞÈËÄÜ²»ÄÜÒÆ¶¯ 
-				if (abs(nx - x) == 1 && abs(ny - y) == 1) {
-					// Ğ±×Å×ß£ºx ºÍ y ×ø±êÍ¬Ê±·¢Éú±ä»¯
-					if (!(nx >= 1 && nx <= 5 && x >= 1 && x <= 5) || !(nx >= 6 && nx <= 10 && x >= 6 && x <= 10)) {
-						continue;
-					}
-					if ((ny == 1 || ny == 3) && (nx == 1 || nx == 3 || nx == 5 || nx == 6 || nx == 8 || nx == 10)){
-						continue;// Ğ±×Å×ßµÄÓĞĞ§ĞÔ
-					}
-					if ((y == 1 || y == 3) && (x == 1 || x == 3 || x == 5 || x == 6 || x == 8 || x == 10)){
-						continue;// Ğ±×Å×ßµÄÓĞĞ§ĞÔ
-					}
-				}
-				// ½»½çµØÖ»ÓĞÈıÌõÂ·ÄÜ×ß 
-				if (((nx>5 && x <= 5) || (nx <= 5 && x>5)) && (ny == 1 || ny == 3)) {
-					continue;
-				}
-				return true;
-			}
-		}
-	}
-	// ¶à¸ñÌøÔ¾
-	int jumpMax = 9;  // ×î¸ßÌøÔ¾²½Êı
-	for (int i = 0; i < 4; i++) {
-		for (int jump = 2; jump <= jumpMax; jump++) {
-			int nx = x + directions[i][0] * jump;
-			int ny = y + directions[i][1] * jump;
-			// Ô½½ç¼ì²é
-			if (nx >= 0 && nx < 12 && ny >= 0 && ny < 5 && nowBoard[nx][ny]>14 && nowBoard[nx][ny] <= 23) {
-				if (isValidJumpMove(nx, ny, nowBoard, currentLevel, x, y)) {
-					if (((nx>5 && x <= 5) || (nx <= 5 && x>5)) && (ny == 1 || ny == 3)) {
-						break;
-					}
-					if (nowBoard[nx][ny] - 13 > currentLevel){
-						return true;
-					}
-				}
-				else {
-					break;  // Èç¹û²»ÄÜÌøÔ¾£¬Í£Ö¹ÌøÔ¾
-				}
-			}
-			else {
-				break;  // Ô½½ç»òÕßÄ¿µÄµØ²»ÊÇµĞ¾ü£¬Í£Ö¹ÌøÔ¾
-			}
-		}
-	}
-	return false;
+    //æ€è·¯æ˜¯æ¢ç´¢ä¸€æ­¥è·¯å¾„æ˜¯å¦å­˜åœ¨ç­‰çº§æ¯”currentLevelé«˜çš„
+    int directions[8][2] = { { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 }, { -1, -1 }, { -1, 1 }, { 1, -1 }, { 1, 1 } };
+    std::set<std::pair<int, int>> forbiddenSet = { { 2, 1 }, { 4, 1 }, { 7, 1 }, { 9, 1 }, { 3, 2 }, { 8, 2 }, { 2, 3 }, { 4, 3 }, { 7, 3 }, { 9, 3 } };
+    if (forbiddenSet.find({ x, y }) != forbiddenSet.end()){
+        return false;
+    }
+    // éå†å½“å‰èŠ‚ç‚¹çš„å…«ä¸ªæ–¹å‘
+    for (int i = 0; i < 8; i++) {
+        int nx = x + directions[i][0];
+        int ny = y + directions[i][1];
+        // åˆ¤æ–­æ•Œäººä½ç½®æ˜¯å¦åˆæ³•
+        if (nx >= 0 && nx < 12 && ny >= 0 && ny < 5 && nowBoard[nx][ny]>14 && nowBoard[nx][ny] <= 23) {
+            //åˆ¤æ–­æ•Œäººèƒ½ä¸èƒ½æ€æ‰æˆ‘
+            if (nowBoard[nx][ny] - 13>currentLevel){
+                //åˆ¤æ–­æ•Œäººèƒ½ä¸èƒ½ç§»åŠ¨
+                if (abs(nx - x) == 1 && abs(ny - y) == 1) {
+                    // æ–œç€èµ°ï¼šx å’Œ y åæ ‡åŒæ—¶å‘ç”Ÿå˜åŒ–
+                    if (!(nx >= 1 && nx <= 5 && x >= 1 && x <= 5) || !(nx >= 6 && nx <= 10 && x >= 6 && x <= 10)) {
+                        continue;
+                    }
+                    if ((ny == 1 || ny == 3) && (nx == 1 || nx == 3 || nx == 5 || nx == 6 || nx == 8 || nx == 10)){
+                        continue;// æ–œç€èµ°çš„æœ‰æ•ˆæ€§
+                    }
+                    if ((y == 1 || y == 3) && (x == 1 || x == 3 || x == 5 || x == 6 || x == 8 || x == 10)){
+                        continue;// æ–œç€èµ°çš„æœ‰æ•ˆæ€§
+                    }
+                }
+                // äº¤ç•Œåœ°åªæœ‰ä¸‰æ¡è·¯èƒ½èµ°
+                if (((nx>5 && x <= 5) || (nx <= 5 && x>5)) && (ny == 1 || ny == 3)) {
+                    continue;
+                }
+                return true;
+            }
+        }
+    }
+    // å¤šæ ¼è·³è·ƒ
+    int jumpMax = 9;  // æœ€é«˜è·³è·ƒæ­¥æ•°
+    for (int i = 0; i < 4; i++) {
+        for (int jump = 2; jump <= jumpMax; jump++) {
+            int nx = x + directions[i][0] * jump;
+            int ny = y + directions[i][1] * jump;
+            // è¶Šç•Œæ£€æŸ¥
+            if (nx >= 0 && nx < 12 && ny >= 0 && ny < 5 && nowBoard[nx][ny]>14 && nowBoard[nx][ny] <= 23) {
+                if (isValidJumpMove(nx, ny, nowBoard, currentLevel, x, y)) {
+                    if (((nx>5 && x <= 5) || (nx <= 5 && x>5)) && (ny == 1 || ny == 3)) {
+                        break;
+                    }
+                    if (nowBoard[nx][ny] - 13 > currentLevel){
+                        return true;
+                    }
+                }
+                else {
+                    break;  // å¦‚æœä¸èƒ½è·³è·ƒï¼Œåœæ­¢è·³è·ƒ
+                }
+            }
+            else {
+                break;  // è¶Šç•Œæˆ–è€…ç›®çš„åœ°ä¸æ˜¯æ•Œå†›ï¼Œåœæ­¢è·³è·ƒ
+            }
+        }
+    }
+    return false;
 }
