@@ -60,10 +60,10 @@ std::string DifficultAI::getNextStep(Board board) {
             }
         }
     }
-    //std::cout<<"军旗步数"<<junqiStepNum<<std::endl;
-    //for(int i =0;i<4;i++){
-    // 	std::cout<<junqiStep[i]<<"  ";
-    //}
+    std::cout<<"军旗步数"<<junqiStepNum<<std::endl;
+    for(int i =0;i<4;i++){
+        std::cout<<junqiStep[i]<<"  ";
+    }
     // 计算敌人的最短路径
     int enemy1StepNum = INT_MAX;
     int enemy1Step[4] = { 0, 0, -1, -1 }; // [x, y, next_x, next_y]
@@ -474,6 +474,7 @@ std::string DifficultAI::getNextStep(Board board) {
 
         if (finalStep[0] == -1)//不杀军旗，不保护ai在人类棋盘最大的棋子
         {
+
             int latestx = -1, latesty = -1, distance = 100;
             if (junqiStep[2] != -1){
                 for (int i = 0; i<4; i++){
@@ -507,6 +508,7 @@ std::string DifficultAI::getNextStep(Board board) {
     {
         int latestx = -1, latesty = -1,distance = 100;
         if (junqiStep[2] != -1){
+            std::cout<<"there"<<std::endl;
             for (int i = 0; i<4; i++){
                 finalStep[i] = junqiStep[i];
             }
@@ -560,6 +562,8 @@ void DifficultAI::aStarToTarget(int startX, int startY, int targetX, int targetY
     // 是否访问
     bool visited[12][5];
     memset(visited, false, sizeof(visited));
+    step[0] = startX;
+    step[1] = startY;
     // 记录前驱节点
     std::pair<int, int> prev[12][5];
     memset(prev, -1, sizeof(prev));  // -1表示没有前驱节点
